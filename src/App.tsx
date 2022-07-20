@@ -1,26 +1,27 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
+import { SignUp } from './components/page/user/SignUp';
 
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <div className="container">
-          {
-            //header, menu
-          }
-        </div>
+      <body>
+        <BrowserRouter>
+          <main className="container">
+            {
+              //header, menu
+            }
 
-        <main className="container">
             <Routes>
-              <Route/>
+              <Route path="/signup" element={<SignUp />} />
             </Routes>
-        </main>
-      </BrowserRouter>
 
-      {
-        // footer
-      }
+            {
+              // footer
+            }
+          </main>
+        </BrowserRouter>
+      </body>
     </>
   );
 }
