@@ -8,21 +8,21 @@ export const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState(true);
+  const [passwordState, setPasswordState] = useState(true);
 
   const submit = useCallback(async (e: SyntheticEvent) => {
     e.preventDefault();
 
     if (password !== passwordConfirm) {
-      setPasswordCheck(false);
-      return;
-    }
-
-    try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('res: ', res);
-    } catch (e) {
-      console.error(e);
+      console.log("password does not match")
+      setPasswordState(false);
+    } else {
+      try {
+        const res = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('res: ', res);
+      } catch (e) {
+        console.error(e);
+      }
     }
 
   }, [email, password, passwordConfirm]);
@@ -38,6 +38,11 @@ export const SignUp = () => {
             <a href="#" className="btn btn-danger btn-lg"><AiFillGoogleCircle /> Google</a>
           </div>
           <div className="or-seperator"><b>or</b></div>
+          {
+            passwordState ? 
+            <div className="alert alert-light" role="alert">write info below</div> 
+            : <div className="alert alert-danger" role="alert">password does not match</div>
+          }
           <div className="form-group">
             <input type="email" className="form-control input-lg" name="email" placeholder="Email Address" required
               onChange={e => setEmail(e.target.value)}
