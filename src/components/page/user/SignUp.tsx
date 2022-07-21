@@ -13,10 +13,10 @@ export const SignUp = () => {
   const [authMessage, setAuthMessage] = useState("")
 
   /**
-   * submit
+   * signUpWithEmail
    * user登録処理
    */
-  const submit = useCallback(async (e: SyntheticEvent) => {
+  const signUpWithEmail = useCallback(async (e: SyntheticEvent) => {
     e.preventDefault();
 
     // passwordの確認
@@ -47,7 +47,7 @@ export const SignUp = () => {
   return (
     <>
       <div className="signup-form">
-        <form className="container" onSubmit={submit}>
+        <form className="container" onSubmit={signUpWithEmail}>
           <h2>Create Account</h2>
           <p className="hint-text">Sign up with your social media account or email address</p>
           <div className="social-btn text-center">
