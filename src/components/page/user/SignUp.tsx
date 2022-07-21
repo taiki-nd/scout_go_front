@@ -1,11 +1,36 @@
 import "./SignUp.css"
 import { AiFillGithub, AiFillGoogleCircle } from 'react-icons/ai'
+import { useState, useCallback, SyntheticEvent } from "react";
+import { auth } from "../../../utils/firebase"
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export const SignUp = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [passwordCheck, setPasswordCheck] = useState(true);
+
+  const submit = useCallback(async (e: SyntheticEvent) => {
+    e.preventDefault();
+
+    if (password !== passwordConfirm) {
+      setPasswordCheck(false);
+      return;
+    }
+
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('res: ', res);
+    } catch (e) {
+      console.error(e);
+    }
+
+  }, [email, password, passwordConfirm]);
+
   return (
     <>
       <div className="signup-form">
-        <form className="container">
+        <form className="container" onSubmit={submit}>
           <h2>Create Account</h2>
           <p className="hint-text">Sign up with your social media account or email address</p>
           <div className="social-btn text-center">
@@ -14,13 +39,19 @@ export const SignUp = () => {
           </div>
           <div className="or-seperator"><b>or</b></div>
           <div className="form-group">
-            <input type="email" className="form-control input-lg" name="email" placeholder="Email Address" required />
+            <input type="email" className="form-control input-lg" name="email" placeholder="Email Address" required
+              onChange={e => setEmail(e.target.value)}
+            />
           </div>
           <div className="form-group">
-            <input type="password" className="form-control input-lg" name="password" placeholder="Password" required />
+            <input type="password" className="form-control input-lg" name="password" placeholder="Password" required
+              onChange={e => setPassword(e.target.value)}
+            />
           </div>
           <div className="form-group">
-            <input type="password" className="form-control input-lg" name="confirm_password" placeholder="Confirm Password" required />
+            <input type="password" className="form-control input-lg" name="confirm_password" placeholder="Confirm Password" required
+              onChange={e => setPasswordConfirm(e.target.value)}
+            />
           </div>
           <div className="form-group">
             <button type="submit" className="btn btn-success btn-lg btn-block signup-btn">Sign Up</button>
