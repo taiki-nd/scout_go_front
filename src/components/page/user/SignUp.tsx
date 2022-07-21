@@ -14,13 +14,13 @@ export const SignUp = () => {
           </div>
           <div className="or-seperator"><b>or</b></div>
           <div className="form-group">
-            <input type="email" className="form-control input-lg" name="email" placeholder="Email Address" />
+            <input type="email" className="form-control input-lg" name="email" placeholder="Email Address" required />
           </div>
           <div className="form-group">
-            <input type="password" className="form-control input-lg" name="password" placeholder="Password" />
+            <input type="password" className="form-control input-lg" name="password" placeholder="Password" required />
           </div>
           <div className="form-group">
-            <input type="password" className="form-control input-lg" name="confirm_password" placeholder="Confirm Password" />
+            <input type="password" className="form-control input-lg" name="confirm_password" placeholder="Confirm Password" required />
           </div>
           <div className="form-group">
             <button type="submit" className="btn btn-success btn-lg btn-block signup-btn">Sign Up</button>
