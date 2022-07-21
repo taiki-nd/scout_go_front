@@ -1,7 +1,7 @@
 import "./SignUp.css"
 import { AiFillGithub, AiFillGoogleCircle } from 'react-icons/ai'
 import { useState, useCallback, SyntheticEvent } from "react";
-import { auth } from "../../../utils/firebase"
+import firebase from "../../../utils/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { errorMessageConstants } from "../../../config/constant";
 import { passwordPattern } from "../../../utils/regularExpressions";
@@ -28,7 +28,7 @@ export const SignUp = () => {
     } else {
       // firebaseへのuser登録
       try {
-        const res = await createUserWithEmailAndPassword(auth, email, password);
+        const res = await firebase.auth().createUserWithEmailAndPassword(email, password);
         console.log('res: ', res);
       } catch (e :any) {
         console.error('firebase error code:', e.code);
