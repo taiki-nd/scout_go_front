@@ -42,7 +42,6 @@ export const SignUp = () => {
         }
       }
     }
-
   }, [email, password, passwordConfirm]);
 
   return (
