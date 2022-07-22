@@ -55,10 +55,12 @@ export const SignUp = () => {
 
     try {
       const currentUser = await firebase.auth().currentUser;
+      if (currentUser) {
+        await currentUser.linkWithPopup(provider)
+      } else {
+        await firebase.auth().signInWithPopup(provider)
+      }
       const res = currentUser
-        ? await currentUser.linkWithPopup(provider)
-        : await firebase.auth().signInWithPopup(provider)
-
       console.log('res: ', res)
     } catch (e: any) {
       console.error('firebase error code:', e.code);
