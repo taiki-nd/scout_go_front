@@ -18,6 +18,8 @@ export const SignUp = () => {
   const signUpWithEmail = useCallback(async (e: SyntheticEvent) => {
     e.preventDefault();
 
+    console.log('signUp with Email');
+
     // passwordの確認
     if (password !== passwordConfirm) {
       setAuthMessage(errorMessageConstants.passwordMatchingError);
@@ -48,12 +50,11 @@ export const SignUp = () => {
    * user登録処理
    */
   const signUpWithGitHub = useCallback(async () => {
-    console.log('signup with GitHub')
-    const provider = new firebase.auth.GithubAuthProvider()
+    console.log('signUp with GitHub');
+    const provider = new firebase.auth.GithubAuthProvider();
 
     try {
       const currentUser = await firebase.auth().currentUser;
-
       const res = currentUser
         ? await currentUser.linkWithPopup(provider)
         : await firebase.auth().signInWithPopup(provider)
@@ -69,6 +70,26 @@ export const SignUp = () => {
     }
   }, [])
 
+  /**
+   * signUpWithGoogle
+   * user登録処理
+   */
+  const SignUpWithGoogle = useCallback(async () => {
+    console.log('signUp with Google');
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    try {
+      const currentUser = await firebase.auth().currentUser;
+      if (currentUser) {
+        await currentUser.linkWithPopup(provider)
+      } else {
+        await firebase.auth().signInWithPopup(provider)
+      }
+    } catch (e: any) {
+
+    }
+  }, [])
+
   return (
     <>
       <div className="signup-form">
@@ -76,13 +97,13 @@ export const SignUp = () => {
           <h2>Create Account</h2>
           <p className="hint-text">Sign up with your social media account or email address</p>
           {
-            authMessage == '' 
+            authMessage === '' 
             ? <div></div> 
             : <div className="alert alert-danger" role="alert">{authMessage}</div>
           }
           <div className="social-btn text-center">
             <div className="btn btn-dark btn-lg" onClick={signUpWithGitHub}><AiFillGithub /> GitHub</div>
-            <div className="btn btn-danger btn-lg"><AiFillGoogleCircle /> Google</div>
+            <div className="btn btn-danger btn-lg" onClick={SignUpWithGoogle}><AiFillGoogleCircle /> Google</div>
           </div>
           <div className="or-seperator"><b>or</b></div>
           <div className="form-group">
