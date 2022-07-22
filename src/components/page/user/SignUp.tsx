@@ -2,7 +2,6 @@ import "./SignUp.css"
 import { AiFillGithub, AiFillGoogleCircle } from 'react-icons/ai'
 import { useState, useCallback, SyntheticEvent } from "react";
 import firebase from "../../../utils/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { errorMessageConstants } from "../../../config/constant";
 import { passwordPattern } from "../../../utils/regularExpressions";
 
@@ -44,22 +43,48 @@ export const SignUp = () => {
     }
   }, [email, password, passwordConfirm]);
 
+  /**
+   * signUpWithGitHub
+   * user登録処理
+   */
+  const signUpWithGitHub = useCallback(async () => {
+    console.log('signup with GitHub')
+    const provider = new firebase.auth.GithubAuthProvider()
+
+    try {
+      const currentUser = await firebase.auth().currentUser;
+
+      const res = currentUser
+        ? await currentUser.linkWithPopup(provider)
+        : await firebase.auth().signInWithPopup(provider)
+
+      console.log('res: ', res)
+    } catch (e: any) {
+      console.error('firebase error code:', e.code);
+      switch (e.code) {
+        case 'auth/invalid-email':
+          setAuthMessage(errorMessageConstants.firebaseInvalidEmailError);
+          break;
+      }
+    }
+  }, [])
+
   return (
     <>
       <div className="signup-form">
         <form className="container" onSubmit={signUpWithEmail}>
           <h2>Create Account</h2>
           <p className="hint-text">Sign up with your social media account or email address</p>
-          <div className="social-btn text-center">
-            <a href="#" className="btn btn-dark btn-lg "><AiFillGithub /> GitHub</a>
-            <a href="#" className="btn btn-danger btn-lg"><AiFillGoogleCircle /> Google</a>
-          </div>
-          <div className="or-seperator"><b>or</b></div>
           {
-            authMessage == '' ? 
-            <div className="alert alert-light" role="alert">write info below</div> 
+            authMessage == '' 
+            ? <div></div> 
             : <div className="alert alert-danger" role="alert">{authMessage}</div>
           }
+          <div className="social-btn text-center">
+            <div className="btn btn-dark btn-lg" onClick={signUpWithGitHub}><AiFillGithub /> GitHub</div>
+            <div className="btn btn-danger btn-lg"><AiFillGoogleCircle /> Google</div>
+          </div>
+          <div className="or-seperator"><b>or</b></div>
           <div className="form-group">
             <input type="email" className="form-control input-lg" name="email" placeholder="Email Address" required
               onChange={e => setEmail(e.target.value)}
