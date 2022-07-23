@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { SignUp } from './components/page/user/SignUp';
+import { SignUp } from './components/page/user/signup/SignUp';
 
 function App() {
   return (
