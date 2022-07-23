@@ -1,6 +1,6 @@
 import "./SignUp.css"
 import { AiFillGithub, AiFillGoogleCircle } from 'react-icons/ai'
-import { useState, useCallback, SyntheticEvent } from "react";
+import { useState,　useEffect, useCallback, SyntheticEvent } from "react";
 import firebase from "../../../utils/firebase";
 import { errorMessageConstants } from "../../../config/constant";
 import { passwordPattern } from "../../../utils/regularExpressions";
@@ -10,6 +10,17 @@ export const SignUp = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [authMessage, setAuthMessage] = useState("")
+
+  // signIn状態の確認
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        console.log('user signed in');
+      } else {
+        console.log('user not signed in');
+      }
+    })
+  }, [])
 
   /**
    * signUpWithEmail
