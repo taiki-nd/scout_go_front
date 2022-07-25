@@ -1,7 +1,8 @@
 import "./SignUp.css"
 import { AiFillGithub, AiFillGoogleCircle } from 'react-icons/ai'
 import { useState, useEffect, useCallback, SyntheticEvent } from "react";
-import firebase from "../../../../utils/firebase";
+import { auth } from "../../../../utils/firebase";
+import { getAuth, signInWithPopup, createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { errorMessageConstants } from "../../../../config/constant";
 import { passwordPattern } from "../../../../utils/regularExpressions";
 import { Navigate } from "react-router-dom";
@@ -15,7 +16,7 @@ export const SignUp = () => {
 
   // signIn状態の確認
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(user => {
+    auth.onAuthStateChanged(user => {
       if (user) {
         console.log('user signed in');
       } else {
@@ -42,7 +43,7 @@ export const SignUp = () => {
     } else {
       // firebaseへのuser登録
       try {
-        const res = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const res = await createUserWithEmailAndPassword(auth, email, password);
         console.log('res: ', res);
         setSignInStatus(true);
       } catch (e :any) {
@@ -65,22 +66,23 @@ export const SignUp = () => {
    */
   const signUpWithGitHub = useCallback(async () => {
     console.log('signUp with GitHub');
-    const provider = new firebase.auth.GithubAuthProvider();
+    const provider = new GithubAuthProvider();
 
-    try {
-      const currentUser = await firebase.auth().currentUser;
-      const res = currentUser
-        ? await currentUser.linkWithPopup(provider)
-        : await firebase.auth().signInWithPopup(provider)
-      console.log('res: ', res)
-    } catch (e: any) {
-      console.error('firebase error code:', e.code);
-      switch (e.code) {
-        case 'auth/invalid-email':
-          setAuthMessage(errorMessageConstants.firebaseInvalidEmailError);
-          break;
-      }
-    }
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      //const credential = GithubAuthProvider.credentialFromResult(result);
+      //const token = credential?.accessToken;
+      const user = result.user;
+      console.log('user: ', user)
+      localStorage.setItem('scout-go_uid', user.uid);
+      setSignInStatus(true);
+    }).catch((error) => {
+      const errorCode = error.code;
+      console.log('error code: ', errorCode)
+      const errorMessage = error.message;
+      const email = error.customData.email;
+      const credential = GithubAuthProvider.credentialFromError(error);
+    });
   }, [])
 
   /**
@@ -89,27 +91,23 @@ export const SignUp = () => {
    */
   const SignUpWithGoogle = useCallback(async () => {
     console.log('signUp with Google');
-    const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new GoogleAuthProvider();
 
-    try {
-      const currentUser = await firebase.auth().currentUser;
-      console.log('currentUser: ', currentUser)
-      const res = currentUser
-        ? await currentUser.linkWithPopup(provider)
-        : await firebase.auth().signInWithPopup(provider)
-      console.log('res: ', res);
-      const user = await firebase.auth().currentUser;
-      const uid = user?.uid
-      localStorage.setItem('scout-go_uid', String(uid));
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      //const credential = GoogleAuthProvider.credentialFromResult(result);
+      //const token = credential?.accessToken;
+      const user = result.user;
+      console.log('user: ', user)
+      localStorage.setItem('scout-go_uid', user.uid);
       setSignInStatus(true);
-    } catch (e: any) {
-      console.error('firebase error code:', e.code);
-      switch (e.code) {
-        case 'auth/invalid-email':
-          setAuthMessage(errorMessageConstants.firebaseInvalidEmailError);
-          break;
-      }
-    }
+    }).catch((error) => {
+      const errorCode = error.code;
+      console.log('error code: ', errorCode)
+      const errorMessage = error.message;
+      const email = error.customData.email;
+      const credential = GoogleAuthProvider.credentialFromError(error);
+    });
   }, [])
 
   if (signInStatus === true) {
