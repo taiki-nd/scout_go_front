@@ -4,12 +4,14 @@ import { useState, useEffect, useCallback, SyntheticEvent } from "react";
 import firebase from "../../../../utils/firebase";
 import { errorMessageConstants } from "../../../../config/constant";
 import { passwordPattern } from "../../../../utils/regularExpressions";
+import { Navigate } from "react-router-dom";
 
 export const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [authMessage, setAuthMessage] = useState("")
+  const [authMessage, setAuthMessage] = useState("");
+  const [signInStatus, setSignInStatus] = useState(false);
 
   // signIn状態の確認
   useEffect(() => {
@@ -42,6 +44,7 @@ export const SignUp = () => {
       try {
         const res = await firebase.auth().createUserWithEmailAndPassword(email, password);
         console.log('res: ', res);
+        setSignInStatus(true);
       } catch (e :any) {
         console.error('firebase error code:', e.code);
         switch (e.code) {
@@ -90,14 +93,30 @@ export const SignUp = () => {
 
     try {
       const currentUser = await firebase.auth().currentUser;
+      console.log('currentUser: ', currentUser)
       const res = currentUser
         ? await currentUser.linkWithPopup(provider)
         : await firebase.auth().signInWithPopup(provider)
       console.log('res: ', res);
+      const user = await firebase.auth().currentUser;
+      const uid = user?.uid
+      localStorage.setItem('scout-go_uid', String(uid));
+      setSignInStatus(true);
     } catch (e: any) {
-
+      console.error('firebase error code:', e.code);
+      switch (e.code) {
+        case 'auth/invalid-email':
+          setAuthMessage(errorMessageConstants.firebaseInvalidEmailError);
+          break;
+      }
     }
   }, [])
+
+  if (signInStatus === true) {
+    return (
+      <Navigate to='/signup2' />
+    );
+  }
 
   return (
     <>
