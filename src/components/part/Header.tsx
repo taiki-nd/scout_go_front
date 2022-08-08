@@ -28,7 +28,7 @@ export const Header = () => {
           <NavLink to="/" className="p-2 link-secondary">Activities</NavLink>
           <NavLink to="/" className="p-2 link-secondary">ScoutedList</NavLink>
           <NavLink to="/" className="p-2 link-secondary">Form</NavLink>
-          <NavLink className="p-2 link-secondary" to="/login" onClick={clickLogout}>SignOut</NavLink>
+          <NavLink className="p-2 link-secondary" to="/signin" onClick={clickLogout}>SignOut</NavLink>
         </nav>
       </div>
     </>
