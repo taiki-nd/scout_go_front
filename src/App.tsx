@@ -10,10 +10,8 @@ function App() {
     <>
       <body>
         <BrowserRouter>
+          <Header />
           <main className="container">
-            {
-              <Header />
-            }
 
             <Routes>
               <Route path="/signup" element={<SignUp />} />
