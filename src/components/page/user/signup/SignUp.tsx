@@ -2,10 +2,11 @@ import "./SignUp.css"
 import { AiFillGithub, AiFillGoogleCircle } from 'react-icons/ai'
 import { useState, useEffect, useCallback, SyntheticEvent } from "react";
 import { auth } from "../../../../utils/firebase";
-import { getAuth, signInWithPopup, createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup, createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { errorMessageConstants } from "../../../../config/constant";
 import { passwordPattern } from "../../../../utils/regularExpressions";
 import { Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ export const SignUp = () => {
     auth.onAuthStateChanged(user => {
       if (user) {
         console.log('user signed in');
+        setSignInStatus(true);
       } else {
         console.log('user not signed in');
       }
@@ -153,7 +155,7 @@ export const SignUp = () => {
             <button type="submit" className="btn btn-success btn-lg btn-block signup-btn">Sign Up</button>
           </div>
         </form>
-        <div className="text-center">Already have an account? <a href="#">Login here</a></div>
+        <div className="text-center">Already have an account? <Link to="/signin">Login here</Link></div>
       </div>
     </>
   );
