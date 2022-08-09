@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { useState } from "react";
+import { Status } from "../../../../model/Status";
+import axios from "axios";
 import "./SignUp.css"
 
 export const SignUp2 = () => {
@@ -13,8 +16,42 @@ export const SignUp2 = () => {
   const [birthMonth, setBirthMonth] = useState(Number);
   const [birthDay, setBirthDay] = useState(Number);
   const [autoPermission, setAutoPermission] = useState(false);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState([]);
   const [prefecture, setPrefecture] = useState("");
+
+  const [selectedStatus, setSelectedStatus] = useState([] as Number[]);
+
+  /**
+   * getStatus
+   * status情報を取得
+   */
+  useEffect(() => {
+    const getStatus = async () => {
+      try {
+        const {data} = await axios.get('/statuses');
+        console.log(data.data);
+        setStatus(data.data);
+      } catch (e: any) {
+        console.log('error:', e.message);
+      }
+    }
+    getStatus();
+  },[]);
+
+  /**
+   * checkStatus
+   * statusのidを取得
+   * @param id 
+   * @returns selectedStatus
+   */
+  const checkStatus = (id: number) => {
+    if (selectedStatus.some(s => s === id)) {
+      setSelectedStatus(selectedStatus.filter(s => s !== id));
+      return;
+    }
+    setSelectedStatus([...selectedStatus, id]);
+    console.log('statuses', selectedStatus)
+  }
 
   const submit = () => {
 
@@ -68,9 +105,19 @@ export const SignUp2 = () => {
 
         <div className="form-group">
           <label>ステータス</label>
-          <input type="text" className="form-control input-lg" placeholder="ステータス" required
-            onChange={e => setStatus(e.target.value)}
-          />
+          <div className="col-sm-10">
+            {status.map((s: Status) => {
+              return (
+                <div className="form-check form-check-inline" key={s.id}>
+                  <input className="form-check-input" type="checkbox" placeholder="ステータス"
+                    value={s.id}
+                    onChange={() => checkStatus(s.id)}
+                  />
+                  <label className="form-check-label">{s.name}</label>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="form-group">
