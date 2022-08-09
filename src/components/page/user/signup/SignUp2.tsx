@@ -14,6 +14,7 @@ export const SignUp2 = () => {
   const [birthDay, setBirthDay] = useState(Number);
   const [autoPermission, setAutoPermission] = useState(false);
   const [status, setStatus] = useState("");
+  const [prefecture, setPrefecture] = useState("");
 
   const submit = () => {
 
@@ -69,6 +70,13 @@ export const SignUp2 = () => {
           <label>ステータス</label>
           <input type="text" className="form-control input-lg" placeholder="ステータス" required
             onChange={e => setStatus(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>職務可能エリア</label>
+          <input type="text" className="form-control input-lg" placeholder="都道府県" required
+            onChange={e => setPrefecture(e.target.value)}
           />
         </div>
 
