@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { Status } from "../../../../model/Status";
+import { Prefecture } from "../../../../model/Prefecture"
 import axios from "axios";
 import "./SignUp.css"
 
@@ -17,9 +18,10 @@ export const SignUp2 = () => {
   const [birthDay, setBirthDay] = useState(Number);
   const [autoPermission, setAutoPermission] = useState(false);
   const [status, setStatus] = useState([]);
-  const [prefecture, setPrefecture] = useState("");
+  const [prefecture, setPrefecture] = useState([]);
 
   const [selectedStatus, setSelectedStatus] = useState([] as Number[]);
+  const [selectedPrefecture, setSelectedPrefecture] = useState([] as Number[]);
 
   /**
    * getStatus
@@ -50,7 +52,39 @@ export const SignUp2 = () => {
       return;
     }
     setSelectedStatus([...selectedStatus, id]);
-    console.log('statuses', selectedStatus)
+    console.log('statuses', selectedStatus);
+  }
+
+  /**
+   * getPrefecture
+   * status情報を取得
+   */
+  useEffect(() => {
+    const getPrefecture = async () => {
+      try {
+        const {data} = await axios.get('/prefectures');
+        console.log(data.data);
+        setPrefecture(data.data);
+      } catch (e: any) {
+        console.log('error:', e.message);
+      }
+    }
+    getPrefecture();
+  },[]);
+
+  /**
+   * checkPrefecture
+   * prefectureのidを取得
+   * @param id 
+   * @returns selectedStatus
+   */
+  const checkPrefecture = (id: number) => {
+    if (selectedStatus.some(s => s === id)) {
+      setSelectedStatus(selectedStatus.filter(s => s !== id));
+      return;
+    }
+    setSelectedPrefecture([...selectedStatus, id]);
+    console.log('prefectures', selectedPrefecture);
   }
 
   const submit = () => {
@@ -121,10 +155,20 @@ export const SignUp2 = () => {
         </div>
 
         <div className="form-group">
-          <label>職務可能エリア</label>
-          <input type="text" className="form-control input-lg" placeholder="都道府県" required
-            onChange={e => setPrefecture(e.target.value)}
-          />
+          <label>就業可能エリア</label>
+          <div className="col-sm-10">
+            {prefecture.map((p: Prefecture) => {
+              return (
+                <div className="form-check form-check-inline" key={p.id}>
+                  <input className="form-check-input" type="checkbox" placeholder="都道府県"
+                    value={p.id}
+                    onChange={() => checkPrefecture(p.id)}
+                  />
+                  <label className="form-check-label">{p.name}</label>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <button className="btn btn-success btn-lg btn-block signup-btn" type="submit">Submit</button>
