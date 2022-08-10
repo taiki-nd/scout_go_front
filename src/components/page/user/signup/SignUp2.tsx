@@ -20,8 +20,32 @@ export const SignUp2 = () => {
   const [status, setStatus] = useState([]);
   const [prefecture, setPrefecture] = useState([]);
 
+  const [sexBoolean, setSexBoolean] = useState(true);
+
   const [selectedStatus, setSelectedStatus] = useState([] as Number[]);
   const [selectedPrefecture, setSelectedPrefecture] = useState([] as Number[]);
+
+  /**
+   * checkSex
+   * 性別情報の取得
+   */
+  useEffect(() => {
+    const checkSex = () => {
+      console.log('sexboolean', sexBoolean);
+      var maleStatus = document.getElementsByName("maleStatus")[0] as HTMLInputElement;
+      var femaleStatus = document.getElementsByName("femaleStatus")[0] as HTMLInputElement;
+      if (sexBoolean) {
+        maleStatus.checked = true;
+        femaleStatus.checked = false;
+        setSex("male")
+      } else {
+        maleStatus.checked = false;
+        femaleStatus.checked = true;
+        setSex("female")
+      }
+    }
+    checkSex();
+  },[sexBoolean]);
 
   /**
    * getStatus
@@ -79,16 +103,21 @@ export const SignUp2 = () => {
    * @returns selectedStatus
    */
   const checkPrefecture = (id: number) => {
-    if (selectedStatus.some(s => s === id)) {
-      setSelectedStatus(selectedStatus.filter(s => s !== id));
+    if (selectedPrefecture.some(s => s === id)) {
+      setSelectedStatus(selectedPrefecture.filter(s => s !== id));
       return;
     }
-    setSelectedPrefecture([...selectedStatus, id]);
+    setSelectedPrefecture([...selectedPrefecture, id]);
     console.log('prefectures', selectedPrefecture);
   }
 
   const submit = () => {
-
+    var uuid = localStorage.getItem('scout-go_uid')
+    if (uuid) {
+      setUuid(uuid);
+      console.log('uuid:', uuid);
+    }
+    
   }
 
   return (
@@ -135,6 +164,26 @@ export const SignUp2 = () => {
           <input type="number" step="1" className="form-control input-lg" placeholder="19" required
             onChange={e => setBirthDay(parseInt(e.target.value))}
           />
+        </div>
+
+        <div className="form-group">
+          <label>性別</label>
+          <div className="col-sm-10">
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" name="maleStatus" placeholder="性別"
+                value={"male"}
+                onChange={e => setSexBoolean(!sexBoolean)}
+              />
+              <label className="form-check-label">男性</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" name="femaleStatus" placeholder="性別"
+                value={"female"}
+                onChange={e => setSexBoolean(!sexBoolean)}
+              />
+              <label className="form-check-label">女性</label>
+            </div>
+          </div>
         </div>
 
         <div className="form-group">
