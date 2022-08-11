@@ -168,40 +168,40 @@ export const SignUp2 = () => {
 
         <div className="form-group">
           <label>氏名</label>
-          <input type="text" className="form-control input-lg" placeholder="山田"   
+          <input type="text" className="form-control input-lg" placeholder="山田" required
             onChange={e => setLastName(e.target.value)}
           />
-          <input type="text" className="form-control input-lg" placeholder="太郎"   
+          <input type="text" className="form-control input-lg" placeholder="太郎" required
             onChange={e => setLastNameKana(e.target.value)}
           />
         </div>
 
         <div className="form-group">
           <label>氏名カナ</label>
-          <input type="text" className="form-control input-lg" placeholder="ヤマダ"   
+          <input type="text" className="form-control input-lg" placeholder="ヤマダ" required
             onChange={e => setFirstName(e.target.value)}
           />
-          <input type="text" className="form-control input-lg" placeholder="タロウ"   
+          <input type="text" className="form-control input-lg" placeholder="タロウ" required
             onChange={e => setFirstNameKana(e.target.value)}
           />
         </div>
 
         <div className="form-group">
           <label>ニックネーム</label>
-          <input type="text" className="form-control input-lg" placeholder="nickname"   
+          <input type="text" className="form-control input-lg" placeholder="nickname" required
             onChange={e => setNickname(e.target.value)}
           />
         </div>
 
         <div className="form-group">
           <label>誕生日</label>
-          <input type="number" step="1" className="form-control input-lg" placeholder="2000"   
+          <input type="number" step="1" className="form-control input-lg" placeholder="2000" required
             onChange={e => setBirthYear(parseInt(e.target.value))}
           />
-          <input type="number" step="1" className="form-control input-lg" placeholder="3"   
+          <input type="number" step="1" className="form-control input-lg" placeholder="3" required
             onChange={e => setBirthMonth(parseInt(e.target.value))}
           />
-          <input type="number" step="1" className="form-control input-lg" placeholder="19"   
+          <input type="number" step="1" className="form-control input-lg" placeholder="19" required
             onChange={e => setBirthDay(parseInt(e.target.value))}
           />
         </div>
