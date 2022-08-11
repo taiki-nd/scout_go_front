@@ -17,16 +17,13 @@ export const SignUp2 = () => {
   const [birthYear, setBirthYear] = useState(Number);
   const [birthMonth, setBirthMonth] = useState(Number);
   const [birthDay, setBirthDay] = useState(Number);
-  const [autoPermission, setAutoPermission] = useState(false);
   const [status, setStatus] = useState([]);
   const [prefecture, setPrefecture] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
 
   const [sexBoolean, setSexBoolean] = useState(true);
-
-  const [selectedStatus, setSelectedStatus] = useState([] as Number[]);
-  const [selectedPrefecture, setSelectedPrefecture] = useState([] as Number[]);
+  const [checkedAllPrefecture, setCheckedAllPrefecture] = useState(false)
 
   /**
    * checkSex
@@ -68,23 +65,8 @@ export const SignUp2 = () => {
   },[]);
 
   /**
-   * checkStatus
-   * statusのidを取得
-   * @param id 
-   * @returns selectedStatus
-   */
-  const checkStatus = (id: number) => {
-    if (selectedStatus.some(s => s === id)) {
-      setSelectedStatus(selectedStatus.filter(s => s !== id));
-      return;
-    }
-    setSelectedStatus([...selectedStatus, id]);
-    console.log('statuses', selectedStatus);
-  }
-
-  /**
    * getPrefecture
-   * status情報を取得
+   * 就業可能エリア情報を取得
    */
   useEffect(() => {
     const getPrefecture = async () => {
@@ -99,26 +81,21 @@ export const SignUp2 = () => {
     getPrefecture();
   },[]);
 
-  /**
-   * checkPrefecture
-   * prefectureのidを取得
-   * @param id 
-   * @returns selectedStatus
-   */
-  const checkPrefecture = (id: number) => {
-    if (selectedPrefecture.some(s => s === id)) {
-      setSelectedStatus(selectedPrefecture.filter(s => s !== id));
-      return;
-    }
-    setSelectedPrefecture([...selectedPrefecture, id]);
-    console.log('prefectures', selectedPrefecture);
-  }
+  useEffect(() => {
+    checkAllPrefecture()
+  },[checkedAllPrefecture])
 
   /**
    * checkAllPrefecture
    * 都道府県の全選択全解除
    */
-  const checkAllPrefecture= () => {}
+  const checkAllPrefecture = () => {
+    var checkPrefectures = document.getElementsByName("prefecture-check");
+    for (let i=0; i<checkPrefectures.length; i++) {
+      var checkedPrefecture = checkPrefectures[i] as HTMLInputElement;
+      checkedPrefecture.checked = checkedAllPrefecture;
+    }
+  }
 
   /**
    * submit
@@ -138,9 +115,29 @@ export const SignUp2 = () => {
     }
     
     try {
-      console.log(
-        lastName, lastNameKana, firstName, firstNameKana, nickname, birthYear, birthMonth, birthDay, sex, status, prefecture
-      )
+      // 選択されたステータスの配列の生成
+      var statuses = document.getElementsByName("status-check");
+      var checkedStatus = [] as number[];
+      for (var i = 0; i < statuses.length; i++) {
+        var checkedStatusResult = statuses[i] as HTMLInputElement;
+        if (checkedStatusResult.checked === true) {
+          checkedStatus.push(parseInt(checkedStatusResult.value));
+        }
+      }
+      console.log('checkedStatus', checkedStatus);
+
+      // 選択された就業可能エリアの配列の生成
+      var prefectures = document.getElementsByName("prefecture-check");
+      var checkedPrefecture = [] as number[];
+      for (let i=0; i<prefectures.length; i++) {
+        var checkedPrefectureResult = prefectures[i] as HTMLInputElement;
+        if (checkedPrefectureResult.checked == true) {
+          checkedPrefecture.push(parseInt(checkedPrefectureResult.value));
+        }
+      }
+      console.log('checkedPrefecture', checkedPrefecture);
+      console.log(lastName, lastNameKana, firstName, firstNameKana, nickname, birthYear, birthMonth, birthDay, sex, checkedStatus, checkedPrefecture);
+      /*
       const res = await axios.post('/users', {
         uuid: uuid,
         last_name: lastName,
@@ -153,9 +150,10 @@ export const SignUp2 = () => {
         birth_day: birthDay,
         sex: sex,
         statuses: selectedStatus,
-        prefectures: selectedPrefecture,
+        prefectures: checkedPrefecture,
       })
       console.log('apiResult:', res.data)
+      */
     } catch (e: any) {
       console.error('error:', e.message, e.config.url)
       setErrorMessage(e.message)
@@ -170,40 +168,40 @@ export const SignUp2 = () => {
 
         <div className="form-group">
           <label>氏名</label>
-          <input type="text" className="form-control input-lg" placeholder="山田" required
+          <input type="text" className="form-control input-lg" placeholder="山田"   
             onChange={e => setLastName(e.target.value)}
           />
-          <input type="text" className="form-control input-lg" placeholder="太郎" required
+          <input type="text" className="form-control input-lg" placeholder="太郎"   
             onChange={e => setLastNameKana(e.target.value)}
           />
         </div>
 
         <div className="form-group">
           <label>氏名カナ</label>
-          <input type="text" className="form-control input-lg" placeholder="ヤマダ" required
+          <input type="text" className="form-control input-lg" placeholder="ヤマダ"   
             onChange={e => setFirstName(e.target.value)}
           />
-          <input type="text" className="form-control input-lg" placeholder="タロウ" required
+          <input type="text" className="form-control input-lg" placeholder="タロウ"   
             onChange={e => setFirstNameKana(e.target.value)}
           />
         </div>
 
         <div className="form-group">
           <label>ニックネーム</label>
-          <input type="text" className="form-control input-lg" placeholder="nickname" required
+          <input type="text" className="form-control input-lg" placeholder="nickname"   
             onChange={e => setNickname(e.target.value)}
           />
         </div>
 
         <div className="form-group">
           <label>誕生日</label>
-          <input type="number" step="1" className="form-control input-lg" placeholder="2000" required
+          <input type="number" step="1" className="form-control input-lg" placeholder="2000"   
             onChange={e => setBirthYear(parseInt(e.target.value))}
           />
-          <input type="number" step="1" className="form-control input-lg" placeholder="3" required
+          <input type="number" step="1" className="form-control input-lg" placeholder="3"   
             onChange={e => setBirthMonth(parseInt(e.target.value))}
           />
-          <input type="number" step="1" className="form-control input-lg" placeholder="19" required
+          <input type="number" step="1" className="form-control input-lg" placeholder="19"   
             onChange={e => setBirthDay(parseInt(e.target.value))}
           />
         </div>
@@ -234,9 +232,8 @@ export const SignUp2 = () => {
             {status.map((s: Status) => {
               return (
                 <div className="form-check form-check-inline" key={s.id}>
-                  <input className="form-check-input" type="checkbox" placeholder="ステータス"
+                  <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check"
                     value={s.id}
-                    onChange={() => checkStatus(s.id)}
                   />
                   <label className="form-check-label">{s.name}</label>
                 </div>
@@ -249,9 +246,9 @@ export const SignUp2 = () => {
           <label>就業可能エリア</label>
           <div className="col-sm-10">
             <div className="form-check form-check-inline">
-            <input className="form-check-input" type="checkbox" placeholder="全て" name="prefecture-all-check"
+            <input className="form-check-input" type="checkbox" placeholder="全て" name="prefecture-all-check" checked={checkedAllPrefecture}
               value="全て"
-
+              onChange={() => setCheckedAllPrefecture(!checkedAllPrefecture)}
             />
             <label className="form-check-label">全て</label>
           </div>
@@ -262,7 +259,6 @@ export const SignUp2 = () => {
                 <div className="form-check form-check-inline" key={p.id}>
                   <input className="form-check-input" type="checkbox" placeholder="都道府県" name="prefecture-check"
                     value={p.id}
-                    onChange={() => checkPrefecture(p.id)}
                   />
                   <label className="form-check-label">{p.name}</label>
                 </div>
