@@ -4,6 +4,7 @@ import { Status } from "../../../../model/Status";
 import { Prefecture } from "../../../../model/Prefecture"
 import axios from "axios";
 import "./SignUp.css"
+import { SyntheticEvent } from "react";
 
 export const SignUp2 = () => {
   const [uuid, setUuid] = useState("")
@@ -19,6 +20,8 @@ export const SignUp2 = () => {
   const [autoPermission, setAutoPermission] = useState(false);
   const [status, setStatus] = useState([]);
   const [prefecture, setPrefecture] = useState([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [sexBoolean, setSexBoolean] = useState(true);
 
@@ -111,13 +114,52 @@ export const SignUp2 = () => {
     console.log('prefectures', selectedPrefecture);
   }
 
-  const submit = () => {
+  /**
+   * checkAllPrefecture
+   * 都道府県の全選択全解除
+   */
+  const checkAllPrefecture= () => {}
+
+  /**
+   * submit
+   * ユーザー情報作成
+   */
+  const submit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+
+    // uuid取得
     var uuid = localStorage.getItem('scout-go_uid')
     if (uuid) {
       setUuid(uuid);
       console.log('uuid:', uuid);
+    } else {
+      setErrorMessage("not_exist_uuid")
+      return;
     }
     
+    try {
+      console.log(
+        lastName, lastNameKana, firstName, firstNameKana, nickname, birthYear, birthMonth, birthDay, sex, status, prefecture
+      )
+      const res = await axios.post('/users', {
+        uuid: uuid,
+        last_name: lastName,
+        last_name_kana: lastNameKana,
+        first_name: firstName,
+        first_name_kana: firstNameKana,
+        nickname: nickname,
+        birth_Year: birthYear,
+        birth_month: birthMonth,
+        birth_day: birthDay,
+        sex: sex,
+        statuses: selectedStatus,
+        prefectures: selectedPrefecture,
+      })
+      console.log('apiResult:', res.data)
+    } catch (e: any) {
+      console.error('error:', e.message, e.config.url)
+      setErrorMessage(e.message)
+    }
   }
 
   return (
@@ -206,10 +248,19 @@ export const SignUp2 = () => {
         <div className="form-group">
           <label>就業可能エリア</label>
           <div className="col-sm-10">
+            <div className="form-check form-check-inline">
+            <input className="form-check-input" type="checkbox" placeholder="全て" name="prefecture-all-check"
+              value="全て"
+
+            />
+            <label className="form-check-label">全て</label>
+          </div>
+          </div>
+          <div className="col-sm-10">
             {prefecture.map((p: Prefecture) => {
               return (
                 <div className="form-check form-check-inline" key={p.id}>
-                  <input className="form-check-input" type="checkbox" placeholder="都道府県"
+                  <input className="form-check-input" type="checkbox" placeholder="都道府県" name="prefecture-check"
                     value={p.id}
                     onChange={() => checkPrefecture(p.id)}
                   />
