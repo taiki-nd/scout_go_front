@@ -55,10 +55,14 @@ export const SignUp2 = () => {
     const getStatus = async () => {
       try {
         const {data} = await axios.get('/statuses');
-        console.log(data.data);
+        console.log(data);
         setStatus(data.data);
+        if (!data.status) {
+          setErrorMessage('ステータス情報の取得に失敗しました。ページを再ロードしてください。')
+        }
       } catch (e: any) {
-        console.log('error:', e.message);
+        console.error('error:', e.message);
+        setErrorMessage("通信障害が発生しました。")
       }
     }
     getStatus();
@@ -72,10 +76,14 @@ export const SignUp2 = () => {
     const getPrefecture = async () => {
       try {
         const {data} = await axios.get('/prefectures');
-        console.log(data.data);
+        console.log(data);
         setPrefecture(data.data);
+        if (!data.status) {
+          setErrorMessage('就業可能エリア取得に失敗しました。ページを再ロードしてください。')
+        }
       } catch (e: any) {
         console.log('error:', e.message);
+        setErrorMessage("通信障害が発生しました。")
       }
     }
     getPrefecture();
@@ -156,7 +164,7 @@ export const SignUp2 = () => {
       */
     } catch (e: any) {
       console.error('error:', e.message, e.config.url)
-      setErrorMessage(e.message)
+      setErrorMessage('ユーザー情報登録時にエラーが発生しました。')
     }
   }
 
@@ -164,8 +172,12 @@ export const SignUp2 = () => {
     <>
     <div className="signup-form">
       <form className="container" onSubmit={submit}>
-        <h1 className="h3 mb-3 fw-normal">Create Account</h1>
-
+        <h2 className="h3 mb-3 fw-normal">Create Account</h2>
+          {
+            errorMessage === '' 
+            ? <div></div> 
+            : <div className="alert alert-danger" role="alert">{errorMessage}</div>
+          }
         <div className="form-group">
           <label>氏名</label>
           <input type="text" className="form-control input-lg" placeholder="山田" required
