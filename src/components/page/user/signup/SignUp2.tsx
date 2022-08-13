@@ -35,8 +35,8 @@ export const SignUp2 = () => {
    * userのサインインステータスの確認
    */
   useEffect(() => {
-    // signIn状態の確認
     const checkUserState = async () => {
+      // signIn状態の確認
       auth.onAuthStateChanged(user => {
         if (user) {
           console.log('user signed in');
@@ -46,6 +46,8 @@ export const SignUp2 = () => {
           return <Navigate to='/' />
         }
       })
+
+      // uuidからユーザー情報の登録を確認
       try {
         const { data } = await axios.get('/get_user_from_uuid', {
           params: {
