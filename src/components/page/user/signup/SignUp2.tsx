@@ -5,6 +5,7 @@ import { Prefecture } from "../../../../model/Prefecture"
 import axios from "axios";
 import "./SignUp.css"
 import { SyntheticEvent } from "react";
+import { Navigate } from "react-router-dom";
 
 export const SignUp2 = () => {
   const [uuid, setUuid] = useState("")
@@ -24,6 +25,32 @@ export const SignUp2 = () => {
 
   const [sexBoolean, setSexBoolean] = useState(true);
   const [checkedAllPrefecture, setCheckedAllPrefecture] = useState(false)
+
+  const [userState, setUserState] = useState(false);
+
+  /**
+   * checkUserState
+   * userのサインインステータスの確認
+   */
+  useEffect(() => {
+    const checkUserState = async () => {
+      try {
+        var uuid = localStorage.getItem("scout-go_uid");
+        const {data} = await axios.get('/get_user_from_uuid', {
+          params: {
+            uuid: uuid
+          }
+        })
+        if (data.status) {
+          setUserState(true);
+        }
+        console.log('data', data);
+      } catch (e: any) {
+        console.error(e.message);
+      }
+    }
+    checkUserState();
+  }, [])
 
   /**
    * checkSex
@@ -143,9 +170,8 @@ export const SignUp2 = () => {
           checkedPrefecture.push(parseInt(checkedPrefectureResult.value));
         }
       }
-      console.log('checkedPrefecture', checkedPrefecture);
+
       console.log(lastName, lastNameKana, firstName, firstNameKana, nickname, birthYear, birthMonth, birthDay, sex, checkedStatus, checkedPrefecture);
-      /*
       const res = await axios.post('/users', {
         uuid: uuid,
         last_name: lastName,
@@ -157,15 +183,18 @@ export const SignUp2 = () => {
         birth_month: birthMonth,
         birth_day: birthDay,
         sex: sex,
-        statuses: selectedStatus,
+        statuses: checkedStatus,
         prefectures: checkedPrefecture,
-      })
-      console.log('apiResult:', res.data)
-      */
+      });
+      console.log('apiResult:', res.data);
     } catch (e: any) {
       console.error('error:', e.message, e.config.url)
       setErrorMessage('ユーザー情報登録時にエラーが発生しました。')
     }
+  }
+
+  if (userState) {
+    return <Navigate to='/'/>
   }
 
   return (
