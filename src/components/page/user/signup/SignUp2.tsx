@@ -6,6 +6,8 @@ import axios from "axios";
 import "./SignUp.css"
 import { SyntheticEvent } from "react";
 import { Navigate } from "react-router-dom";
+import { auth } from "../../../../utils/firebase";
+import { useCallback } from "react";
 
 export const SignUp2 = () => {
   const [uuid, setUuid] = useState("")
@@ -33,10 +35,19 @@ export const SignUp2 = () => {
    * userのサインインステータスの確認
    */
   useEffect(() => {
+    // signIn状態の確認
     const checkUserState = async () => {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          console.log('user signed in');
+          setUuid(user.uid);
+        } else {
+          console.log('user not signed in');
+          return <Navigate to='/' />
+        }
+      })
       try {
-        var uuid = localStorage.getItem("scout-go_uid");
-        const {data} = await axios.get('/get_user_from_uuid', {
+        const { data } = await axios.get('/get_user_from_uuid', {
           params: {
             uuid: uuid
           }
@@ -72,7 +83,7 @@ export const SignUp2 = () => {
       }
     }
     checkSex();
-  },[sexBoolean]);
+  }, [sexBoolean]);
 
   /**
    * getStatus
@@ -81,7 +92,7 @@ export const SignUp2 = () => {
   useEffect(() => {
     const getStatus = async () => {
       try {
-        const {data} = await axios.get('/statuses');
+        const { data } = await axios.get('/statuses');
         console.log(data);
         setStatus(data.data);
         if (!data.status) {
@@ -93,7 +104,7 @@ export const SignUp2 = () => {
       }
     }
     getStatus();
-  },[]);
+  }, []);
 
   /**
    * getPrefecture
@@ -102,7 +113,7 @@ export const SignUp2 = () => {
   useEffect(() => {
     const getPrefecture = async () => {
       try {
-        const {data} = await axios.get('/prefectures');
+        const { data } = await axios.get('/prefectures');
         console.log(data);
         setPrefecture(data.data);
         if (!data.status) {
@@ -114,11 +125,11 @@ export const SignUp2 = () => {
       }
     }
     getPrefecture();
-  },[]);
+  }, []);
 
   useEffect(() => {
     checkAllPrefecture()
-  },[checkedAllPrefecture])
+  }, [checkedAllPrefecture])
 
   /**
    * checkAllPrefecture
@@ -126,7 +137,7 @@ export const SignUp2 = () => {
    */
   const checkAllPrefecture = () => {
     var checkPrefectures = document.getElementsByName("prefecture-check");
-    for (let i=0; i<checkPrefectures.length; i++) {
+    for (let i = 0; i < checkPrefectures.length; i++) {
       var checkedPrefecture = checkPrefectures[i] as HTMLInputElement;
       checkedPrefecture.checked = checkedAllPrefecture;
     }
@@ -136,19 +147,9 @@ export const SignUp2 = () => {
    * submit
    * ユーザー情報作成
    */
-  const submit = async (e: SyntheticEvent) => {
+  const submit = useCallback( async (e: SyntheticEvent) => {
     e.preventDefault();
 
-    // uuid取得
-    var uuid = localStorage.getItem('scout-go_uid')
-    if (uuid) {
-      setUuid(uuid);
-      console.log('uuid:', uuid);
-    } else {
-      setErrorMessage("not_exist_uuid")
-      return;
-    }
-    
     try {
       // 選択されたステータスの配列の生成
       var statuses = document.getElementsByName("status-check");
@@ -159,20 +160,19 @@ export const SignUp2 = () => {
           checkedStatus.push(parseInt(checkedStatusResult.value));
         }
       }
-      console.log('checkedStatus', checkedStatus);
 
       // 選択された就業可能エリアの配列の生成
       var prefectures = document.getElementsByName("prefecture-check");
       var checkedPrefecture = [] as number[];
-      for (let i=0; i<prefectures.length; i++) {
+      for (let i = 0; i < prefectures.length; i++) {
         var checkedPrefectureResult = prefectures[i] as HTMLInputElement;
         if (checkedPrefectureResult.checked == true) {
           checkedPrefecture.push(parseInt(checkedPrefectureResult.value));
         }
       }
 
-      console.log(lastName, lastNameKana, firstName, firstNameKana, nickname, birthYear, birthMonth, birthDay, sex, checkedStatus, checkedPrefecture);
-      const res = await axios.post('/users', {
+      // user情報の登録
+      const {data} = await axios.post('/users', {
         uuid: uuid,
         last_name: lastName,
         last_name_kana: lastNameKana,
@@ -186,131 +186,136 @@ export const SignUp2 = () => {
         statuses: checkedStatus,
         prefectures: checkedPrefecture,
       });
-      console.log('apiResult:', res.data);
+      console.log('apiResult:', data);
+      if (data.status) {
+        setUserState(true);
+      } else {
+        setErrorMessage('ユーザー情報の登録に失敗しました。入力情報をご確認ください。');
+      }
     } catch (e: any) {
       console.error('error:', e.message, e.config.url)
       setErrorMessage('ユーザー情報登録時にエラーが発生しました。')
     }
-  }
+  }, [lastName, lastNameKana, firstName, firstNameKana, nickname, birthYear, birthMonth, birthDay, sex]);
 
   if (userState) {
-    return <Navigate to='/'/>
+    return <Navigate to='/' />
   }
 
   return (
     <>
-    <div className="signup-form">
-      <form className="container" onSubmit={submit}>
-        <h2 className="h3 mb-3 fw-normal">Create Account</h2>
+      <div className="signup-form">
+        <form className="container" onSubmit={submit}>
+          <h2 className="h3 mb-3 fw-normal">Create Account</h2>
           {
-            errorMessage === '' 
-            ? <div></div> 
-            : <div className="alert alert-danger" role="alert">{errorMessage}</div>
+            errorMessage === ''
+              ? <div></div>
+              : <div className="alert alert-danger" role="alert">{errorMessage}</div>
           }
-        <div className="form-group">
-          <label>氏名</label>
-          <input type="text" className="form-control input-lg" placeholder="山田" required
-            onChange={e => setLastName(e.target.value)}
-          />
-          <input type="text" className="form-control input-lg" placeholder="太郎" required
-            onChange={e => setLastNameKana(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>氏名カナ</label>
-          <input type="text" className="form-control input-lg" placeholder="ヤマダ" required
-            onChange={e => setFirstName(e.target.value)}
-          />
-          <input type="text" className="form-control input-lg" placeholder="タロウ" required
-            onChange={e => setFirstNameKana(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>ニックネーム</label>
-          <input type="text" className="form-control input-lg" placeholder="nickname" required
-            onChange={e => setNickname(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>誕生日</label>
-          <input type="number" step="1" className="form-control input-lg" placeholder="2000" required
-            onChange={e => setBirthYear(parseInt(e.target.value))}
-          />
-          <input type="number" step="1" className="form-control input-lg" placeholder="3" required
-            onChange={e => setBirthMonth(parseInt(e.target.value))}
-          />
-          <input type="number" step="1" className="form-control input-lg" placeholder="19" required
-            onChange={e => setBirthDay(parseInt(e.target.value))}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>性別</label>
-          <div className="col-sm-10">
-            <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" name="maleStatus" placeholder="性別"
-                value={"male"}
-                onChange={e => setSexBoolean(!sexBoolean)}
-              />
-              <label className="form-check-label">男性</label>
-            </div>
-            <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" name="femaleStatus" placeholder="性別"
-                value={"female"}
-                onChange={e => setSexBoolean(!sexBoolean)}
-              />
-              <label className="form-check-label">女性</label>
-            </div>
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>ステータス</label>
-          <div className="col-sm-10">
-            {status.map((s: Status) => {
-              return (
-                <div className="form-check form-check-inline" key={s.id}>
-                  <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check"
-                    value={s.id}
-                  />
-                  <label className="form-check-label">{s.name}</label>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>就業可能エリア</label>
-          <div className="col-sm-10">
-            <div className="form-check form-check-inline">
-            <input className="form-check-input" type="checkbox" placeholder="全て" name="prefecture-all-check" checked={checkedAllPrefecture}
-              value="全て"
-              onChange={() => setCheckedAllPrefecture(!checkedAllPrefecture)}
+          <div className="form-group">
+            <label>氏名</label>
+            <input type="text" className="form-control input-lg" placeholder="山田" required
+              onChange={e => setLastName(e.target.value)}
             />
-            <label className="form-check-label">全て</label>
+            <input type="text" className="form-control input-lg" placeholder="太郎" required
+              onChange={e => setLastNameKana(e.target.value)}
+            />
           </div>
-          </div>
-          <div className="col-sm-10">
-            {prefecture.map((p: Prefecture) => {
-              return (
-                <div className="form-check form-check-inline" key={p.id}>
-                  <input className="form-check-input" type="checkbox" placeholder="都道府県" name="prefecture-check"
-                    value={p.id}
-                  />
-                  <label className="form-check-label">{p.name}</label>
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
-        <button className="btn btn-success btn-lg btn-block signup-btn" type="submit">Submit</button>
-      </form>
-    </div>
+          <div className="form-group">
+            <label>氏名カナ</label>
+            <input type="text" className="form-control input-lg" placeholder="ヤマダ" required
+              onChange={e => setFirstName(e.target.value)}
+            />
+            <input type="text" className="form-control input-lg" placeholder="タロウ" required
+              onChange={e => setFirstNameKana(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>ニックネーム</label>
+            <input type="text" className="form-control input-lg" placeholder="nickname" required
+              onChange={e => setNickname(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>誕生日</label>
+            <input type="number" step="1" className="form-control input-lg" placeholder="2000" required
+              onChange={e => setBirthYear(parseInt(e.target.value))}
+            />
+            <input type="number" step="1" className="form-control input-lg" placeholder="3" required
+              onChange={e => setBirthMonth(parseInt(e.target.value))}
+            />
+            <input type="number" step="1" className="form-control input-lg" placeholder="19" required
+              onChange={e => setBirthDay(parseInt(e.target.value))}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>性別</label>
+            <div className="col-sm-10">
+              <div className="form-check form-check-inline">
+                <input className="form-check-input" type="checkbox" name="maleStatus" placeholder="性別"
+                  value={"male"}
+                  onChange={e => setSexBoolean(!sexBoolean)}
+                />
+                <label className="form-check-label">男性</label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input className="form-check-input" type="checkbox" name="femaleStatus" placeholder="性別"
+                  value={"female"}
+                  onChange={e => setSexBoolean(!sexBoolean)}
+                />
+                <label className="form-check-label">女性</label>
+              </div>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>ステータス</label>
+            <div className="col-sm-10">
+              {status.map((s: Status) => {
+                return (
+                  <div className="form-check form-check-inline" key={s.id}>
+                    <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check"
+                      value={s.id}
+                    />
+                    <label className="form-check-label">{s.name}</label>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>就業可能エリア</label>
+            <div className="col-sm-10">
+              <div className="form-check form-check-inline">
+                <input className="form-check-input" type="checkbox" placeholder="全て" name="prefecture-all-check" checked={checkedAllPrefecture}
+                  value="全て"
+                  onChange={() => setCheckedAllPrefecture(!checkedAllPrefecture)}
+                />
+                <label className="form-check-label">全て</label>
+              </div>
+            </div>
+            <div className="col-sm-10">
+              {prefecture.map((p: Prefecture) => {
+                return (
+                  <div className="form-check form-check-inline" key={p.id}>
+                    <input className="form-check-input" type="checkbox" placeholder="都道府県" name="prefecture-check"
+                      value={p.id}
+                    />
+                    <label className="form-check-label">{p.name}</label>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <button className="btn btn-success btn-lg btn-block signup-btn" type="submit">Submit</button>
+        </form>
+      </div>
     </>
   );
 }
