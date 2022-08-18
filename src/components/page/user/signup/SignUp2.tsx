@@ -21,6 +21,7 @@ export const SignUp2 = () => {
   const [birthMonth, setBirthMonth] = useState(Number);
   const [birthDay, setBirthDay] = useState(Number);
   const [status, setStatus] = useState([]);
+  const [checkedStatusCount, setCheckedStatusCount] = useState(Number);
   const [prefecture, setPrefecture] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -109,6 +110,40 @@ export const SignUp2 = () => {
   }, []);
 
   /**
+   * 
+   */
+  const countStatus = () => {
+    var status = document.getElementsByName('status-check');
+    var count = 0;
+    console.log('count1', count);
+    for (let i = 0; i < status.length; i++) {
+      var checkedStatus = status[i] as HTMLInputElement;
+      if (checkedStatus.checked) {
+        count = count + 1;
+        console.log('count2', count);
+        setCheckedStatusCount(count);
+      }
+    }
+    console.log('count3', count);
+    if (status.length === 0) {
+      setCheckedStatusCount(0)
+    }
+    console.log('checkedStatusCount', checkedStatusCount)
+    if (checkedStatusCount > 0) {
+      for (let i = 0; i < status.length; i++) {
+        var checkedStatus = status[i] as HTMLInputElement;
+        console.log('checkedStatus', checkedStatus);
+        checkedStatus.prop("required", false);
+      }
+    } else {
+      for (let i = 0; i < status.length; i++) {
+        var checkedStatus = status[i] as HTMLInputElement;
+        checkedStatus.classList.remove("required")
+      }
+    }
+  }
+
+  /**
    * getPrefecture
    * 就業可能エリア情報を取得
    */
@@ -149,7 +184,7 @@ export const SignUp2 = () => {
    * submit
    * ユーザー情報作成
    */
-  const submit = useCallback( async (e: SyntheticEvent) => {
+  const submit = useCallback(async (e: SyntheticEvent) => {
     e.preventDefault();
 
     try {
@@ -174,7 +209,8 @@ export const SignUp2 = () => {
       }
 
       // user情報の登録
-      const {data} = await axios.post('/users', {
+      /*
+      const { data } = await axios.post('/users', {
         uuid: uuid,
         last_name: lastName,
         last_name_kana: lastNameKana,
@@ -194,6 +230,7 @@ export const SignUp2 = () => {
       } else {
         setErrorMessage('ユーザー情報の登録に失敗しました。入力情報をご確認ください。');
       }
+      */
     } catch (e: any) {
       console.error('error:', e.message, e.config.url)
       setErrorMessage('ユーザー情報登録時にエラーが発生しました。')
@@ -215,7 +252,7 @@ export const SignUp2 = () => {
               : <div className="alert alert-danger" role="alert">{errorMessage}</div>
           }
           <div className="form-group">
-            <label>氏名</label>
+          <label>氏名</label>
             <input type="text" className="form-control input-lg" placeholder="山田" required
               onChange={e => setLastName(e.target.value)}
             />
@@ -280,8 +317,9 @@ export const SignUp2 = () => {
               {status.map((s: Status) => {
                 return (
                   <div className="form-check form-check-inline" key={s.id}>
-                    <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check"
+                    <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check" required
                       value={s.id}
+                      onChange={e => countStatus()}
                     />
                     <label className="form-check-label">{s.name}</label>
                   </div>
@@ -289,7 +327,7 @@ export const SignUp2 = () => {
               })}
             </div>
           </div>
-
+{/*
           <div className="form-group">
             <label>就業可能エリア</label>
             <div className="col-sm-10">
@@ -314,8 +352,10 @@ export const SignUp2 = () => {
               })}
             </div>
           </div>
-
-          <button className="btn btn-success btn-lg btn-block signup-btn" type="submit">Submit</button>
+*/}
+          <div className="form-group">
+            <button className="btn btn-success btn-lg btn-block signup-btn" type="submit">Submit</button>
+          </div>
         </form>
       </div>
     </>
