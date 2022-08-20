@@ -277,9 +277,11 @@ export const SignUp2 = () => {
           <div className="form-group">
             <label>氏名カナ</label>
             <input type="text" className="form-control input-lg" placeholder="ヤマダ" required
+              pattern="^[\u30A0-\u30FF]+$" title="全角カタカナ"
               onChange={e => setFirstName(e.target.value)}
             />
             <input type="text" className="form-control input-lg" placeholder="タロウ" required
+              pattern="^[\u30A0-\u30FF]+$" title="全角カタカナ"
               onChange={e => setFirstNameKana(e.target.value)}
             />
           </div>
@@ -287,19 +289,23 @@ export const SignUp2 = () => {
           <div className="form-group">
             <label>ニックネーム</label>
             <input type="text" className="form-control input-lg" placeholder="nickname" required
+              pattern="^[0-9a-zA-Z]*$" title="半角英大文字・半角英小文字・半角数字"
               onChange={e => setNickname(e.target.value)}
             />
           </div>
 
           <div className="form-group">
             <label>誕生日</label>
-            <input type="number" step="1" className="form-control input-lg" placeholder="2000" required
+            <input type="text" step="1" className="form-control input-lg" placeholder="2000" required
+              pattern="[0-9]{4}" title="半角数字4桁"
               onChange={e => setBirthYear(parseInt(e.target.value))}
             />
-            <input type="number" step="1" className="form-control input-lg" placeholder="3" required
+            <input type="text" step="1" className="form-control input-lg" placeholder="3" required
+              pattern="[0-9]{1,2}" title="半角数字1〜2桁"
               onChange={e => setBirthMonth(parseInt(e.target.value))}
             />
-            <input type="number" step="1" className="form-control input-lg" placeholder="19" required
+            <input type="text" step="1" className="form-control input-lg" placeholder="19" required
+              pattern="[0-9]{1,2}" title="半角数字1〜2桁"
               onChange={e => setBirthDay(parseInt(e.target.value))}
             />
           </div>
