@@ -1,10 +1,29 @@
+import { useState ,useEffect } from "react";
 import { signOut } from 'firebase/auth'
 import './Header.css'
 import { NavLink } from 'react-router-dom';
 import { auth } from '../../utils/firebase';
 
 export const Header = () => {
-  const clickLogout = async () => {
+  const [signInStatus, setSignInStatus] = useState(false);
+
+  // signIn状態の確認
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        console.log('user signed in');
+        setSignInStatus(true);
+      } else {
+        console.log('user not signed in');
+      }
+    })
+  }, [])
+
+  /**
+   * clickSignout
+   * サインアウト処理
+   */
+  const clickSignout = async () => {
     signOut(auth).then(() => {
       console.log("ログアウトしました");
     })
@@ -28,7 +47,11 @@ export const Header = () => {
           <NavLink to="/" className="p-2 link-secondary">Activities</NavLink>
           <NavLink to="/" className="p-2 link-secondary">ScoutedList</NavLink>
           <NavLink to="/" className="p-2 link-secondary">Form</NavLink>
-          <NavLink className="p-2 link-secondary" to="/signin" onClick={clickLogout}>SignOut</NavLink>
+          {
+            signInStatus
+            ? <NavLink className="p-2 link-secondary" to="/signin" onClick={clickSignout}>SignOut</NavLink>
+            : <NavLink className="p-2 link-secondary" to="/signin">SignIn</NavLink>
+          }
         </nav>
       </div>
     </>
