@@ -48,6 +48,7 @@ export const SignUp = () => {
         const res = await createUserWithEmailAndPassword(auth, email, password);
         console.log('res: ', res);
         setSignInStatus(true);
+        localStorage.setItem('scout-go_uid', res.user.uid);
       } catch (e :any) {
         console.error('firebase error code:', e.code);
         switch (e.code) {
@@ -72,8 +73,6 @@ export const SignUp = () => {
 
     signInWithPopup(auth, provider)
     .then((result) => {
-      //const credential = GithubAuthProvider.credentialFromResult(result);
-      //const token = credential?.accessToken;
       const user = result.user;
       console.log('user: ', user)
       localStorage.setItem('scout-go_uid', user.uid);
