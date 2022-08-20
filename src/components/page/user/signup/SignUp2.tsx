@@ -111,9 +111,10 @@ export const SignUp2 = () => {
   }, []);
 
   /**
-   * 
+   * requiredStatus
+   * requiredの状態制御
    */
-  const countStatus = () => {
+  const requiredStatus = () => {
     var status = document.getElementsByName('status-check');
     var count = 0;
     for (let i = 0; i < status.length; i++) {
@@ -152,7 +153,8 @@ export const SignUp2 = () => {
   }, []);
 
   useEffect(() => {
-    checkAllPrefecture()
+    checkAllPrefecture();
+    requiredPrefecture();
   }, [checkedAllPrefecture])
 
   /**
@@ -164,6 +166,28 @@ export const SignUp2 = () => {
     for (let i = 0; i < checkPrefectures.length; i++) {
       var checkedPrefecture = checkPrefectures[i] as HTMLInputElement;
       checkedPrefecture.checked = checkedAllPrefecture;
+    }
+  }
+
+  /**
+   * requiredPrefecture
+   * requiredの状態制御
+   */
+  const requiredPrefecture = () => {
+    console.log("required prefecture");
+    var prefecture = document.getElementsByName("prefecture-check");
+    var count = 0;
+    for (let i = 0; i < prefecture.length; i++) {
+      var checkedPrefecture = prefecture[i] as HTMLInputElement;
+      if (checkedPrefecture.checked) {
+        count = count + 1;
+        console.log('count2', count);
+      }
+    }
+    if (count > 0) {
+      setPrefectureRequired(false);
+    } else {
+      setPrefectureRequired(true);
     }
   }
 
@@ -194,6 +218,8 @@ export const SignUp2 = () => {
           checkedPrefecture.push(parseInt(checkedPrefectureResult.value));
         }
       }
+
+      console.log(checkedStatus, checkedPrefecture)
 
       // user情報の登録
       /*
@@ -306,7 +332,7 @@ export const SignUp2 = () => {
                   <div className="form-check form-check-inline" key={s.id}>
                     <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check" required={statusRequired}
                       value={s.id}
-                      onChange={e => countStatus()}
+                      onChange={e => requiredStatus()}
                     />
                     <label className="form-check-label">{s.name}</label>
                   </div>
@@ -319,7 +345,7 @@ export const SignUp2 = () => {
             <label>就業可能エリア</label>
             <div className="col-sm-10">
               <div className="form-check form-check-inline">
-                <input className="form-check-input" type="checkbox" placeholder="全て" name="prefecture-all-check" checked={checkedAllPrefecture}
+                <input className="form-check-input" type="checkbox" placeholder="全て" name="prefecture-all-check" checked={checkedAllPrefecture} required={prefectureRequired}
                   value="全て"
                   onChange={() => setCheckedAllPrefecture(!checkedAllPrefecture)}
                 />
@@ -330,8 +356,9 @@ export const SignUp2 = () => {
               {prefecture.map((p: Prefecture) => {
                 return (
                   <div className="form-check form-check-inline" key={p.id}>
-                    <input className="form-check-input" type="checkbox" placeholder="都道府県" name="prefecture-check"
+                    <input className="form-check-input" type="checkbox" placeholder="都道府県" name="prefecture-check" required={prefectureRequired}
                       value={p.id}
+                      onChange={e => requiredPrefecture()}
                     />
                     <label className="form-check-label">{p.name}</label>
                   </div>
