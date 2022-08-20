@@ -21,13 +21,14 @@ export const SignUp2 = () => {
   const [birthMonth, setBirthMonth] = useState(Number);
   const [birthDay, setBirthDay] = useState(Number);
   const [status, setStatus] = useState([]);
-  const [checkedStatusCount, setCheckedStatusCount] = useState(Number);
   const [prefecture, setPrefecture] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
 
   const [sexBoolean, setSexBoolean] = useState(true);
-  const [checkedAllPrefecture, setCheckedAllPrefecture] = useState(false)
+  const [statusRequired, setStatusRequired] = useState(true);
+  const [prefectureRequired, setPrefectureRequired] = useState(true);
+  const [checkedAllPrefecture, setCheckedAllPrefecture] = useState(false);
 
   const [userState, setUserState] = useState(false);
 
@@ -115,31 +116,17 @@ export const SignUp2 = () => {
   const countStatus = () => {
     var status = document.getElementsByName('status-check');
     var count = 0;
-    console.log('count1', count);
     for (let i = 0; i < status.length; i++) {
       var checkedStatus = status[i] as HTMLInputElement;
       if (checkedStatus.checked) {
         count = count + 1;
         console.log('count2', count);
-        setCheckedStatusCount(count);
       }
     }
-    console.log('count3', count);
-    if (status.length === 0) {
-      setCheckedStatusCount(0)
-    }
-    console.log('checkedStatusCount', checkedStatusCount)
-    if (checkedStatusCount > 0) {
-      for (let i = 0; i < status.length; i++) {
-        var checkedStatus = status[i] as HTMLInputElement;
-        console.log('checkedStatus', checkedStatus);
-        checkedStatus.prop("required", false);
-      }
+    if (count > 0) {
+      setStatusRequired(false);
     } else {
-      for (let i = 0; i < status.length; i++) {
-        var checkedStatus = status[i] as HTMLInputElement;
-        checkedStatus.classList.remove("required")
-      }
+      setStatusRequired(true);
     }
   }
 
@@ -317,7 +304,7 @@ export const SignUp2 = () => {
               {status.map((s: Status) => {
                 return (
                   <div className="form-check form-check-inline" key={s.id}>
-                    <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check" required
+                    <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check" required={statusRequired}
                       value={s.id}
                       onChange={e => countStatus()}
                     />
@@ -327,7 +314,7 @@ export const SignUp2 = () => {
               })}
             </div>
           </div>
-{/*
+
           <div className="form-group">
             <label>就業可能エリア</label>
             <div className="col-sm-10">
@@ -352,7 +339,7 @@ export const SignUp2 = () => {
               })}
             </div>
           </div>
-*/}
+
           <div className="form-group">
             <button className="btn btn-success btn-lg btn-block signup-btn" type="submit">Submit</button>
           </div>
