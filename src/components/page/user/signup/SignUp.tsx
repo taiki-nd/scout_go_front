@@ -122,6 +122,8 @@ export const SignUp = () => {
       <div className="signup-form">
         <form className="container" onSubmit={signUpWithEmail}>
           <h2>Create Account</h2>
+          <div className="text-center">アカウントがある場合はこちら</div>
+          <div className="text-center"><Link to="/signin">SignIn</Link></div>
           <p className="hint-text">Sign up with your social media account or email address</p>
           {
             authMessage === '' 
