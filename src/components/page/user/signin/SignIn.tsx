@@ -1,7 +1,7 @@
 import { AiFillGithub, AiFillGoogleCircle } from 'react-icons/ai'
 import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { auth } from "../../../../utils/firebase";
 import { useCallback } from 'react';
 import { SyntheticEvent } from 'react';
@@ -94,8 +94,10 @@ export const SignIn = () => {
     <>
       <div className="signup-form">
         <form className="container" onSubmit={signInWithEmail}>
-          <h2>Sign In</h2>
-          <p className="hint-text">Sign up with your social media account or email address</p>
+          <h2>SignIn</h2>
+          <div className="text-center">アカウントがない場合はこちら</div>
+          <div className="text-center"><Link to="/signup">SignUp</Link></div>
+          <p className="hint-text">Sign in with your social media account or email address</p>
           {
             authMessage === ''
               ? <div></div>

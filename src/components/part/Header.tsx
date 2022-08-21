@@ -26,11 +26,11 @@ export const Header = () => {
   const clickSignout = async () => {
     signOut(auth).then(() => {
       console.log("ログアウトしました");
+      setSignInStatus(false);
     })
     .catch((error) => {
       console.log(`ログアウト時にエラーが発生しました (${error})`);
     });
-    setSignInStatus(false);
   }
 
   return (
@@ -49,13 +49,13 @@ export const Header = () => {
           {
             signInStatus
             ? <NavLink to="/" className="p-2 link-secondary">ScoutedList</NavLink>
-            : <div></div>
+            : <></>
           }
           <NavLink to="/" className="p-2 link-secondary">Form</NavLink>
           {
             signInStatus
             ? <NavLink className="p-2 link-secondary" to="/signin" onClick={clickSignout}>SignOut</NavLink>
-            : <NavLink className="p-2 link-secondary" to="/signin">SignIn</NavLink>
+            : <NavLink className="p-2 link-secondary" to="/signin">SignIn/SignUp</NavLink>
           }
         </nav>
       </div>
