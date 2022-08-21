@@ -268,7 +268,7 @@ export const SignUp2 = () => {
               onChange={e => setLastName(e.target.value)}
             />
             <input type="text" className="form-control input-lg" placeholder="太郎" required
-              onChange={e => setLastNameKana(e.target.value)}
+              onChange={e => setFirstName(e.target.value)}
             />
           </div>
 
@@ -276,7 +276,7 @@ export const SignUp2 = () => {
             <label>氏名カナ</label>
             <input type="text" className="form-control input-lg" placeholder="ヤマダ" required
               pattern="^[\u30A0-\u30FF]+$" title="全角カタカナ"
-              onChange={e => setFirstName(e.target.value)}
+              onChange={e => setLastNameKana(e.target.value)}
             />
             <input type="text" className="form-control input-lg" placeholder="タロウ" required
               pattern="^[\u30A0-\u30FF]+$" title="全角カタカナ"

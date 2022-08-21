@@ -5,8 +5,20 @@ import { auth } from "../../../../utils/firebase";
 
 export const UserShow = () => {
 
-  const [uuid, setUuid] = useState("");
+  // user情報のstate
+  const [lastName, setLastName] = useState("");
+  const [lastNameKana, setLastNameKana] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [firstNameKana, setFirstNameKana] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [sex, setSex] = useState("");
+  const [birthYear, setBirthYear] = useState(Number);
+  const [birthMonth, setBirthMonth] = useState(Number);
+  const [birthDay, setBirthDay] = useState(Number);
+
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [uuid, setUuid] = useState("");
 
   const {id} = useParams();
   const getId = () => {
@@ -42,6 +54,16 @@ export const UserShow = () => {
         }
       })
       console.log(data.data);
+      const user = data.data;
+      setLastName(user.last_name);
+      setLastNameKana(user.last_name_kana);
+      setFirstName(user.first_name);
+      setFirstNameKana(user.first_name_kana);
+      setNickname(user.nickname);
+      setSex(user.sex);
+      setBirthYear(user.birth_Year);
+      setBirthMonth(user.birth_month);
+      setBirthDay(user.birth_day);
     } catch (e: any) {
       console.error('error:', e.message);
       setErrorMessage("通信障害が発生しました。");
@@ -50,7 +72,7 @@ export const UserShow = () => {
 
   return (
     <>
-      <h1>User詳細</h1>
+      <h1>{lastName} {firstName}</h1>
     </>
   );
 }
