@@ -5,7 +5,7 @@ import { auth } from "../../../../utils/firebase";
 
 export const UserShow = () => {
 
-  const [uuid, setUuid] = useState("")
+  const [uuid, setUuid] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const {id} = useParams();
@@ -13,10 +13,6 @@ export const UserShow = () => {
     return id;
   }
 
-  /**
-   * getUserShow
-   * ユーザーの詳細情報を取得
-   */
   useEffect(() => {
     // signIn状態の確認
     console.log('signIn状態の確認')
@@ -32,6 +28,10 @@ export const UserShow = () => {
     })
   }, []);
 
+  /**
+   * getUserShow
+   * ユーザーの詳細情報を取得
+   */
   const getUserShow = async () => {
     try {
       console.log('here')
@@ -41,8 +41,7 @@ export const UserShow = () => {
           uuid: uuid
         }
       })
-      console.log(data);
-      
+      console.log(data.data);
     } catch (e: any) {
       console.error('error:', e.message);
       setErrorMessage("通信障害が発生しました。");
