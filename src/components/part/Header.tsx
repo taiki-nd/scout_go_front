@@ -17,7 +17,7 @@ export const Header = () => {
         console.log('user not signed in');
       }
     })
-  }, [])
+  }, [signInStatus])
 
   /**
    * clickSignout
@@ -27,9 +27,10 @@ export const Header = () => {
     signOut(auth).then(() => {
       console.log("ログアウトしました");
     })
-      .catch((error) => {
-        console.log(`ログアウト時にエラーが発生しました (${error})`);
-      });
+    .catch((error) => {
+      console.log(`ログアウト時にエラーが発生しました (${error})`);
+    });
+    setSignInStatus(false);
   }
 
   return (
@@ -45,7 +46,11 @@ export const Header = () => {
         <nav className="nav d-flex justify-content-between">
           <NavLink to="/" className="p-2 link-secondary">MyPage</NavLink>
           <NavLink to="/" className="p-2 link-secondary">Activities</NavLink>
-          <NavLink to="/" className="p-2 link-secondary">ScoutedList</NavLink>
+          {
+            signInStatus
+            ? <NavLink to="/" className="p-2 link-secondary">ScoutedList</NavLink>
+            : <div></div>
+          }
           <NavLink to="/" className="p-2 link-secondary">Form</NavLink>
           {
             signInStatus

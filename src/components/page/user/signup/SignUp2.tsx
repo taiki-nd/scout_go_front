@@ -222,7 +222,6 @@ export const SignUp2 = () => {
       console.log(checkedStatus, checkedPrefecture)
 
       // user情報の登録
-      /*
       const { data } = await axios.post('/users', {
         uuid: uuid,
         last_name: lastName,
@@ -243,7 +242,6 @@ export const SignUp2 = () => {
       } else {
         setErrorMessage('ユーザー情報の登録に失敗しました。入力情報をご確認ください。');
       }
-      */
     } catch (e: any) {
       console.error('error:', e.message, e.config.url)
       setErrorMessage('ユーザー情報登録時にエラーが発生しました。')
