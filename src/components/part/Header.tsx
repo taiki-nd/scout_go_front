@@ -44,7 +44,7 @@ export const Header = () => {
       </header>
       <div className="nav-scroller py-1 mb-2">
         <nav className="nav d-flex justify-content-between">
-          <NavLink to="/" className="p-2 link-secondary">MyPage</NavLink>
+          <NavLink to="/user/:id" className="p-2 link-secondary">MyPage</NavLink>
           <NavLink to="/" className="p-2 link-secondary">Activities</NavLink>
           {
             signInStatus
