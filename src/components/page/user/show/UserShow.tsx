@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useState, useEffect } from "react"
 import { Navigate, useParams } from "react-router-dom";
+import { Status } from "../../../../model/Status";
+import { Prefecture } from "../../../../model/Prefecture" 
 import { auth } from "../../../../utils/firebase";
 
 export const UserShow = () => {
@@ -15,6 +17,8 @@ export const UserShow = () => {
   const [birthYear, setBirthYear] = useState(Number);
   const [birthMonth, setBirthMonth] = useState(Number);
   const [birthDay, setBirthDay] = useState(Number);
+  const [status, setStatus] = useState([]);
+  const [prefecture, setPrefecture] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -46,7 +50,6 @@ export const UserShow = () => {
    */
   const getUserShow = async () => {
     try {
-      console.log('here')
       const id = getId();
       const { data } = await axios.get(`users/${id}`, {
         params: {
@@ -55,6 +58,7 @@ export const UserShow = () => {
       })
       console.log(data.data);
       const user = data.data;
+      // user情報の取得
       setLastName(user.last_name);
       setLastNameKana(user.last_name_kana);
       setFirstName(user.first_name);
@@ -64,6 +68,10 @@ export const UserShow = () => {
       setBirthYear(user.birth_Year);
       setBirthMonth(user.birth_month);
       setBirthDay(user.birth_day);
+      // status情報の取得
+      setStatus(user.statuses);
+      // 就業可能エリアの取得
+      setPrefecture(user.prefectures);
     } catch (e: any) {
       console.error('error:', e.message);
       setErrorMessage("通信障害が発生しました。");
@@ -73,6 +81,22 @@ export const UserShow = () => {
   return (
     <>
       <h1>{lastName} {firstName}</h1>
+
+      {status.map((s: Status) => {
+        return (
+          <div className="form-check form-check-inline">
+            <label className="form-check-label">{s.name}</label>
+          </div>
+        );
+      })}
+
+      {prefecture.map((p: Prefecture) => {
+        return (
+          <div className="form-check form-check-inline">
+            <label className="form-check-label">{p.name}</label>
+          </div>
+        );
+      })}
     </>
   );
 }
