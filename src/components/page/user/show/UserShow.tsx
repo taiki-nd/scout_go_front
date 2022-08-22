@@ -4,6 +4,7 @@ import { Navigate, useParams } from "react-router-dom";
 import { Status } from "../../../../model/Status";
 import { Prefecture } from "../../../../model/Prefecture";
 import { School } from "../../../../model/School";
+import { Work } from "../../../../model/Work";
 import { auth } from "../../../../utils/firebase";
 
 export const UserShow = () => {
@@ -21,6 +22,7 @@ export const UserShow = () => {
   const [status, setStatus] = useState([]);
   const [prefecture, setPrefecture] = useState([]);
   const [schools, setSchools] = useState([]);
+  const [works, setWorks] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -76,6 +78,8 @@ export const UserShow = () => {
       setPrefecture(user.prefectures);
       // 学歴の取得
       setSchools(user.schools);
+      // 職歴情報の取得
+      setWorks(user.works);
     } catch (e: any) {
       console.error('error:', e.message);
       setErrorMessage("通信障害が発生しました。");
@@ -98,6 +102,14 @@ export const UserShow = () => {
         return (
           <div className="form-check form-check-inline">
             <label className="form-check-label">{p.name}</label>
+          </div>
+        );
+      })}
+
+      {works.map((w: Work) => {
+        return (
+          <div className="form-check form-check-inline">
+            <label className="form-check-label">{w.name}</label>
           </div>
         );
       })}
