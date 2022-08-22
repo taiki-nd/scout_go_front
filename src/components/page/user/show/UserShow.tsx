@@ -2,7 +2,8 @@ import axios from "axios";
 import { useState, useEffect } from "react"
 import { Navigate, useParams } from "react-router-dom";
 import { Status } from "../../../../model/Status";
-import { Prefecture } from "../../../../model/Prefecture" 
+import { Prefecture } from "../../../../model/Prefecture";
+import { School } from "../../../../model/School";
 import { auth } from "../../../../utils/firebase";
 
 export const UserShow = () => {
@@ -19,6 +20,7 @@ export const UserShow = () => {
   const [birthDay, setBirthDay] = useState(Number);
   const [status, setStatus] = useState([]);
   const [prefecture, setPrefecture] = useState([]);
+  const [schools, setSchools] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -51,6 +53,7 @@ export const UserShow = () => {
   const getUserShow = async () => {
     try {
       const id = getId();
+      // user情報の取得
       const { data } = await axios.get(`users/${id}`, {
         params: {
           uuid: uuid
@@ -58,7 +61,6 @@ export const UserShow = () => {
       })
       console.log(data.data);
       const user = data.data;
-      // user情報の取得
       setLastName(user.last_name);
       setLastNameKana(user.last_name_kana);
       setFirstName(user.first_name);
@@ -72,6 +74,8 @@ export const UserShow = () => {
       setStatus(user.statuses);
       // 就業可能エリアの取得
       setPrefecture(user.prefectures);
+      // 学歴の取得
+      setSchools(user.schools);
     } catch (e: any) {
       console.error('error:', e.message);
       setErrorMessage("通信障害が発生しました。");
@@ -94,6 +98,14 @@ export const UserShow = () => {
         return (
           <div className="form-check form-check-inline">
             <label className="form-check-label">{p.name}</label>
+          </div>
+        );
+      })}
+
+      {schools.map((s: School) => {
+        return (
+          <div className="form-check form-check-inline">
+            <label className="form-check-label">{s.name}</label>
           </div>
         );
       })}
