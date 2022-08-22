@@ -5,6 +5,7 @@ import { Status } from "../../../../model/Status";
 import { Prefecture } from "../../../../model/Prefecture";
 import { School } from "../../../../model/School";
 import { Work } from "../../../../model/Work";
+import { License } from "../../../../model/License";
 import { auth } from "../../../../utils/firebase";
 
 export const UserShow = () => {
@@ -23,6 +24,7 @@ export const UserShow = () => {
   const [prefecture, setPrefecture] = useState([]);
   const [schools, setSchools] = useState([]);
   const [works, setWorks] = useState([]);
+  const [licenses, setLicense] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -80,6 +82,8 @@ export const UserShow = () => {
       setSchools(user.schools);
       // 職歴情報の取得
       setWorks(user.works);
+      // 資格情報の取得
+      setLicense(user.licenses);
     } catch (e: any) {
       console.error('error:', e.message);
       setErrorMessage("通信障害が発生しました。");
@@ -118,6 +122,14 @@ export const UserShow = () => {
         return (
           <div className="form-check form-check-inline">
             <label className="form-check-label">{s.name}</label>
+          </div>
+        );
+      })}
+
+      {licenses.map((l: License) => {
+        return (
+          <div className="form-check form-check-inline">
+            <label className="form-check-label">{l.name}</label>
           </div>
         );
       })}
