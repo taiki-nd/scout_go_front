@@ -11,6 +11,7 @@ import { auth } from "../../../../utils/firebase";
 export const UserShow = () => {
 
   // user情報のstate
+  const [uuid, setUuid] = useState("")
   const [lastName, setLastName] = useState("");
   const [lastNameKana, setLastNameKana] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -28,7 +29,7 @@ export const UserShow = () => {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [uuid, setUuid] = useState("");
+  const [uuidFromFirebase, setUuidFromFireBase] = useState("");
 
   const {id} = useParams();
   const getId = () => {
@@ -41,7 +42,7 @@ export const UserShow = () => {
     auth.onAuthStateChanged(user => {
       if (user) {
         console.log('user signed in');
-        setUuid(user.uid);
+        setUuidFromFireBase(user.uid);
         getUserShow();
       } else {
         console.log('user not signed in');
@@ -60,11 +61,12 @@ export const UserShow = () => {
       // user情報の取得
       const { data } = await axios.get(`users/${id}`, {
         params: {
-          uuid: uuid
+          uuid: uuidFromFirebase
         }
       })
       console.log(data.data);
       const user = data.data;
+      setUuid(user.uuid);
       setLastName(user.last_name);
       setLastNameKana(user.last_name_kana);
       setFirstName(user.first_name);
@@ -92,15 +94,23 @@ export const UserShow = () => {
 
   return (
     <>
-      <h1>{lastName} {firstName}</h1>
+      {
+        uuid === uuidFromFirebase
+        ? <h1>{lastName} {firstName}</h1>
+        : <h1>{nickname}</h1>
+      }
 
-      {status.map((s: Status) => {
-        return (
-          <div className="form-check form-check-inline">
-            <label className="form-check-label">{s.name}</label>
-          </div>
-        );
-      })}
+      {
+        uuid === uuidFromFirebase
+        ? status.map((s: Status) => {
+            return (
+              <div className="form-check form-check-inline">
+                <label className="form-check-label">{s.name}</label>
+              </div>
+            );
+          })
+        : <></>
+      }
 
       {prefecture.map((p: Prefecture) => {
         return (
