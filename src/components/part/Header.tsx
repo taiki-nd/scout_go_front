@@ -9,6 +9,13 @@ export const Header = () => {
   const [signInStatus, setSignInStatus] = useState(false);
   const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
 
+  useEffect(() => {
+    if (Object.keys(cookies).length === 0) {
+      console.log('force signout')
+      clickSignout();
+    }
+  }, [])
+
   /**
    * clickSignout
    * サインアウト処理

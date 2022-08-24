@@ -15,19 +15,6 @@ export const SignIn = () => {
 
   const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
 
-  // signIn状態の確認
-  useEffect(() => {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        console.log('user signed in');
-        setCookie("scout_go_uuid", user.uid);
-        setSignInStatus(true);
-      } else {
-        console.log('user not signed in');
-      }
-    })
-  }, [signInStatus])
-
   /**
    * signIpWithEmail
    * userサインイン処理
@@ -59,6 +46,7 @@ export const SignIn = () => {
       .then((result) => {
         const user = result.user;
         console.log('user', user)
+        setCookie("scout_go_uuid", user.uid);
       }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -81,6 +69,7 @@ export const SignIn = () => {
       .then((result) => {
         const user = result.user;
         console.log('user', user)
+        setCookie("scout_go_uuid", user.uid);
       }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -89,7 +78,7 @@ export const SignIn = () => {
       });
   }, [])
 
-  if (signInStatus === true) {
+  if (Object.keys(cookies).length !== 0) {
     return (
       <Navigate to='/' />
     );
