@@ -37,6 +37,7 @@ export const Header = () => {
         setErrorMessage("通信障害が発生しました。")
       }
     }
+    console.log('id', id)
     getId();
   }, [signInStatus])
 

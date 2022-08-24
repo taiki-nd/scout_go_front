@@ -43,11 +43,10 @@ export const UserShow = () => {
       if (user) {
         console.log('user signed in');
         setUuidFromFireBase(user.uid);
-        getUserShow();
       } else {
         console.log('user not signed in');
-        return <Navigate to='/' />
       }
+      getUserShow();
     })
   }, []);
 
@@ -96,7 +95,7 @@ export const UserShow = () => {
     <>
       {
         uuid === uuidFromFirebase
-        ? <h1>{lastName} {firstName}</h1>
+        ? <div><h1>{lastName} {firstName}</h1><p>({nickname})</p></div>
         : <h1>{nickname}</h1>
       }
 
@@ -112,13 +111,15 @@ export const UserShow = () => {
         : <></>
       }
 
-      {prefecture.map((p: Prefecture) => {
-        return (
-          <div className="form-check form-check-inline">
-            <label className="form-check-label">{p.name}</label>
-          </div>
-        );
-      })}
+      {
+        prefecture.map((p: Prefecture) => {
+          return (
+            <div className="form-check form-check-inline">
+              <label className="form-check-label">{p.name}</label>
+            </div>
+          );
+        })
+      }
 
       {works.map((w: Work) => {
         return (
