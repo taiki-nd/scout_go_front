@@ -4,14 +4,15 @@ import './Header.css'
 import { NavLink } from 'react-router-dom';
 import { auth } from '../../utils/firebase';
 import axios from "axios";
+import { useCookies } from 'react-cookie';
 
 export const Header = () => {
   const [signInStatus, setSignInStatus] = useState(false);
   const [uuid, setUuid] = useState("");
   const [id, setId] = useState(Number);
   const [errorMessage, setErrorMessage] = useState("");
+  const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
 
-  // signIn状態の確認
   useEffect(() => {
     auth.onAuthStateChanged(user => {
       if (user) {
@@ -39,6 +40,11 @@ export const Header = () => {
     }
     console.log('id', id)
     getId();
+    
+    if (Object.keys(cookies).length === 0) {
+      console.log('force signout')
+      clickSignout();
+    }
   }, [signInStatus])
 
   /**
@@ -48,6 +54,7 @@ export const Header = () => {
   const clickSignout = async () => {
     signOut(auth).then(() => {
       console.log("ログアウトしました");
+      removeCookie('scout_go_uuid');
       setSignInStatus(false);
     })
     .catch((error) => {
@@ -69,13 +76,13 @@ export const Header = () => {
           <NavLink to={`/users/${id}`} className="p-2 link-secondary">MyPage</NavLink>
           <NavLink to="/" className="p-2 link-secondary">Activities</NavLink>
           {
-            signInStatus
+            Object.keys(cookies).length !== 0
             ? <NavLink to="/" className="p-2 link-secondary">ScoutedList</NavLink>
             : <></>
           }
           <NavLink to="/" className="p-2 link-secondary">Form</NavLink>
           {
-            signInStatus
+            Object.keys(cookies).length !== 0
             ? <NavLink className="p-2 link-secondary" to="/signin" onClick={clickSignout}>SignOut</NavLink>
             : <NavLink className="p-2 link-secondary" to="/signin">SignIn/SignUp</NavLink>
           }
