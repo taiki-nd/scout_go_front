@@ -42,7 +42,7 @@ export const SignUp2 = () => {
   useEffect(() => {
     const checkUserState = async () => {
       // signIn状態の確認
-      if (!cookies.scout_go_uuid) {
+      if (cookies.scout_go_uuid) {
         setUuid(cookies.scout_go_uuid);
       } else {
         return <Navigate to='/' />
