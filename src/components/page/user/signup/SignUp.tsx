@@ -7,25 +7,15 @@ import { errorMessageConstants } from "../../../../config/constant";
 import { passwordPattern } from "../../../../utils/regularExpressions";
 import { Navigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useCookies } from 'react-cookie';
 
 export const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [authMessage, setAuthMessage] = useState("");
-  const [signInStatus, setSignInStatus] = useState(false);
 
-  // signIn状態の確認
-  useEffect(() => {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        console.log('user signed in');
-        setSignInStatus(true);
-      } else {
-        console.log('user not signed in');
-      }
-    })
-  }, [])
+  const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
 
   /**
    * signUpWithEmail
@@ -47,8 +37,7 @@ export const SignUp = () => {
       try {
         const res = await createUserWithEmailAndPassword(auth, email, password);
         console.log('res: ', res);
-        setSignInStatus(true);
-        localStorage.setItem('scout-go_uid', res.user.uid);
+        setCookie("scout_go_uuid", res.user.uid);
       } catch (e :any) {
         console.error('firebase error code:', e.code);
         switch (e.code) {
@@ -74,9 +63,8 @@ export const SignUp = () => {
     signInWithPopup(auth, provider)
     .then((result) => {
       const user = result.user;
-      console.log('user: ', user)
-      localStorage.setItem('scout-go_uid', user.uid);
-      setSignInStatus(true);
+      console.log('user: ', user);
+      setCookie("scout_go_uuid", user.uid);
     }).catch((error) => {
       const errorCode = error.code;
       console.log('error code: ', errorCode)
@@ -96,12 +84,9 @@ export const SignUp = () => {
 
     signInWithPopup(auth, provider)
     .then((result) => {
-      //const credential = GoogleAuthProvider.credentialFromResult(result);
-      //const token = credential?.accessToken;
       const user = result.user;
-      console.log('user: ', user)
-      localStorage.setItem('scout-go_uid', user.uid);
-      setSignInStatus(true);
+      console.log('user: ', user);
+      setCookie("scout_go_uuid", user.uid);
     }).catch((error) => {
       const errorCode = error.code;
       console.log('error code: ', errorCode)
@@ -111,7 +96,7 @@ export const SignUp = () => {
     });
   }, [])
 
-  if (signInStatus === true) {
+  if (Object.keys(cookies).length !== 0) {
     return (
       <Navigate to='/signup2' />
     );
@@ -123,7 +108,7 @@ export const SignUp = () => {
         <form className="container" onSubmit={signUpWithEmail}>
           <h2>Create Account</h2>
           <div className="text-center">アカウントがある場合はこちら</div>
-          <div className="text-center"><Link to="/signin">SignIn</Link></div>
+          <h3 className="text-center"><Link to="/signin">SignIn</Link></h3>
           <p className="hint-text">Sign up with your social media account or email address</p>
           {
             authMessage === '' 
