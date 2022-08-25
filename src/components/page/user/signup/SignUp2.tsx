@@ -8,6 +8,7 @@ import { SyntheticEvent } from "react";
 import { Navigate } from "react-router-dom";
 import { auth } from "../../../../utils/firebase";
 import { useCallback } from "react";
+import { useCookies } from 'react-cookie';
 
 export const SignUp2 = () => {
   const [uuid, setUuid] = useState("")
@@ -32,6 +33,8 @@ export const SignUp2 = () => {
 
   const [userState, setUserState] = useState(false);
 
+  const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
+
   /**
    * checkUserState
    * userのサインインステータスの確認
@@ -39,16 +42,12 @@ export const SignUp2 = () => {
   useEffect(() => {
     const checkUserState = async () => {
       // signIn状態の確認
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          console.log('user signed in');
-          setUuid(user.uid);
-        } else {
-          console.log('user not signed in');
-          return <Navigate to='/' />
-        }
-      })
-
+      if (!cookies.scout_go_uuid) {
+        setUuid(cookies.scout_go_uuid);
+      } else {
+        return <Navigate to='/' />
+      }
+      
       // uuidからユーザー情報の登録を確認
       try {
         const { data } = await axios.get('/get_user_from_uuid', {

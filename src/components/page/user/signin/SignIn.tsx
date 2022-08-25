@@ -90,7 +90,7 @@ export const SignIn = () => {
         <form className="container" onSubmit={signInWithEmail}>
           <h2>SignIn</h2>
           <div className="text-center">アカウントがない場合はこちら</div>
-          <div className="text-center"><Link to="/signup">SignUp</Link></div>
+          <h3 className="text-center"><Link to="/signup">SignUp</Link></h3>
           <p className="hint-text">Sign in with your social media account or email address</p>
           {
             authMessage === ''
