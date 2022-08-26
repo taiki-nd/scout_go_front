@@ -6,12 +6,11 @@ import axios from "axios";
 import "./SignUp.css"
 import { SyntheticEvent } from "react";
 import { Navigate } from "react-router-dom";
-import { auth } from "../../../../utils/firebase";
 import { useCallback } from "react";
 import { useCookies } from 'react-cookie';
 
 export const SignUp2 = () => {
-  const [uuid, setUuid] = useState("")
+  const [uuid, setUuid] = useState("");
   const [lastName, setLastName] = useState("");
   const [lastNameKana, setLastNameKana] = useState("");
   const [firstName, setFirstName] = useState("");

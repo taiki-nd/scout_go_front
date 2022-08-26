@@ -6,9 +6,10 @@ import { Prefecture } from "../../../../model/Prefecture";
 import { School } from "../../../../model/School";
 import { Work } from "../../../../model/Work";
 import { License } from "../../../../model/License";
+import { useCookies } from 'react-cookie';
 import { auth } from "../../../../utils/firebase";
 
-export const UserShow = () => {
+export const UserMyPage = () => {
 
   // user情報のstate
   const [uuid, setUuid] = useState("")
@@ -31,23 +32,45 @@ export const UserShow = () => {
 
   const [uuidFromFirebase, setUuidFromFireBase] = useState("");
 
+  const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
+
   const {id} = useParams();
   const getId = () => {
     return id;
   }
 
+  /**
+   * checkUserState
+   * userのサインインステータスの確認
+   */
   useEffect(() => {
-    // signIn状態の確認
-    console.log('signIn状態の確認')
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        console.log('user signed in');
-        setUuidFromFireBase(user.uid);
+    const checkUserState = () => {
+      // signIn状態の確認
+      if (cookies.scout_go_uuid) {
+        setUuid(cookies.scout_go_uuid);
       } else {
-        console.log('user not signed in');
+        removeCookie("scout_go_uuid");
       }
-      getUserShow();
-    })
+
+      // firebaseからサインインユーザーのuidを取得
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          console.log('user signed in');
+          setUuidFromFireBase(user.uid);
+        } else {
+          console.log('user not signed in');
+        }
+      })
+
+      // サインインユーザーとマイページユーザーの一致確認
+      if (uuid === uuidFromFirebase) {
+        console.log('サインインユーザーとマイページユーザーの一致')
+      } else {
+        return <Navigate to='/' />
+      }
+    }
+    checkUserState();
+    getUserShow();
   }, []);
 
   /**
@@ -60,7 +83,7 @@ export const UserShow = () => {
       // user情報の取得
       const { data } = await axios.get(`users/${id}`, {
         params: {
-          uuid: uuidFromFirebase
+          uuid: uuid
         }
       })
       console.log(data.data);
@@ -93,22 +116,16 @@ export const UserShow = () => {
 
   return (
     <>
-      {
-        uuid === uuidFromFirebase
-        ? <div><h1>{lastName} {firstName}</h1><p>({nickname})</p></div>
-        : <h1>{nickname}</h1>
-      }
+      <div><h1>{lastName} {firstName}</h1><p>({nickname})</p></div>
 
       {
-        uuid === uuidFromFirebase
-        ? status.map((s: Status) => {
-            return (
-              <div className="form-check form-check-inline">
-                <label className="form-check-label">{s.name}</label>
-              </div>
-            );
-          })
-        : <></>
+        status.map((s: Status) => {
+          return (
+            <div className="form-check form-check-inline">
+              <label className="form-check-label">{s.name}</label>
+            </div>
+          );
+        })
       }
 
       {
