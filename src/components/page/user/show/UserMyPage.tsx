@@ -29,9 +29,9 @@ export const UserMyPage = () => {
   const [licenses, setLicense] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
-
   const [uuidFromFirebase, setUuidFromFireBase] = useState("");
-
+  const [userMatch, setUserMatch] = useState(true);
+  
   const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
 
   const {id} = useParams();
@@ -60,14 +60,7 @@ export const UserMyPage = () => {
         } else {
           console.log('user not signed in');
         }
-      })
-
-      // サインインユーザーとマイページユーザーの一致確認
-      if (uuid === uuidFromFirebase) {
-        console.log('サインインユーザーとマイページユーザーの一致')
-      } else {
-        return <Navigate to='/' />
-      }
+      });
     }
     checkUserState();
     getUserShow();
@@ -89,6 +82,14 @@ export const UserMyPage = () => {
       console.log(data.data);
       const user = data.data;
       setUuid(user.uuid);
+      // サインインユーザーとマイページユーザーの一致確認
+      if (user.uuid === cookies.scout_go_uuid){
+        console.log('user matched');
+        setUserMatch(true);
+      } else {
+        console.log('user not matched');
+        setUserMatch(false);
+      }
       setLastName(user.last_name);
       setLastNameKana(user.last_name_kana);
       setFirstName(user.first_name);
@@ -114,9 +115,13 @@ export const UserMyPage = () => {
     }
   }
 
+  if (!userMatch) {
+    return <Navigate to='/' />
+  }
+
   return (
     <>
-      <div><h1>{lastName} {firstName}</h1><p>({nickname})</p></div>
+      <div><h1>{lastName} {firstName}</h1><p>( nickname: {nickname} )</p></div>
 
       {
         status.map((s: Status) => {
