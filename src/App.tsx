@@ -6,6 +6,7 @@ import { SignUp } from './components/page/user/signup/SignUp';
 import { SignUp2 } from './components/page/user/signup/SignUp2';
 import { SignIn } from './components/page/user/signin/SignIn';
 import { UserMyPage } from './components/page/user/show/UserMyPage';
+import { UserMyPageEdit } from './components/page/user/show/UserMyPageEdit';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
               <Route path="/signup2" element={<SignUp2 />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/mypage/:id" element={<UserMyPage />} />
+              <Route path="/mypage/:id/edit" element={<UserMyPageEdit />} />
             </Routes>
           </main>
           <Footer />

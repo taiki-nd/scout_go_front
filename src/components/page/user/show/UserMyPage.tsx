@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react"
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams, Link } from "react-router-dom";
 import { Status } from "../../../../model/Status";
 import { Prefecture } from "../../../../model/Prefecture";
 import { School } from "../../../../model/School";
@@ -121,7 +121,23 @@ export const UserMyPage = () => {
 
   return (
     <>
-      <div><h1>{lastName} {firstName}</h1><p>( nickname: {nickname} )</p></div>
+    <div className="row justify-content-around">
+      <div className="col-4">
+        <></>
+      </div>
+      <div className="col-4">
+        <Link to={`/mypage/${id}/edit`} className="btn btn-success">EditMyPage</Link>
+      </div>
+    </div>
+
+      <div className="row">
+        <div className="col align-self-start">
+          <h1>{lastName} {firstName}</h1>
+        </div>
+        <div className="col align-self-end">
+          <p>( nickname: {nickname} )</p>
+        </div>
+      </div>
 
       <h2>基本情報</h2>
       誕生日: {birthYear}/{birthMonth}/{birthDay}
@@ -165,6 +181,7 @@ export const UserMyPage = () => {
           </div>
         );
       })}
+
       <h2>資格情報</h2>
       {licenses.map((l: License) => {
         return (
