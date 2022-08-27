@@ -123,6 +123,10 @@ export const UserMyPage = () => {
     <>
       <div><h1>{lastName} {firstName}</h1><p>( nickname: {nickname} )</p></div>
 
+      <h2>基本情報</h2>
+      誕生日: {birthYear}/{birthMonth}/{birthDay}
+
+      <h2>ステータス情報</h2>
       {
         status.map((s: Status) => {
           return (
@@ -133,6 +137,7 @@ export const UserMyPage = () => {
         })
       }
 
+      <h2>就業可能エリア情報</h2>
       {
         prefecture.map((p: Prefecture) => {
           return (
@@ -143,6 +148,7 @@ export const UserMyPage = () => {
         })
       }
 
+      <h2>職歴情報</h2>
       {works.map((w: Work) => {
         return (
           <div className="form-check form-check-inline">
@@ -151,6 +157,7 @@ export const UserMyPage = () => {
         );
       })}
 
+      <h2>学歴情報</h2>
       {schools.map((s: School) => {
         return (
           <div className="form-check form-check-inline">
@@ -158,7 +165,7 @@ export const UserMyPage = () => {
           </div>
         );
       })}
-
+      <h2>資格情報</h2>
       {licenses.map((l: License) => {
         return (
           <div className="form-check form-check-inline">
