@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
+import { Header } from './components/part/Header';
+import { Footer } from './components/part/Footer';
+import { SignUp } from './components/page/user/signup/SignUp';
+import { SignUp2 } from './components/page/user/signup/SignUp2';
+import { SignIn } from './components/page/user/signin/SignIn';
+import { UserMyPage } from './components/page/user/show/UserMyPage';
+import { UserMyPageEdit } from './components/page/user/show/UserMyPageEdit';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <body>
+        <BrowserRouter>
+          <Header />
+          <main className="container">
+            <Routes>
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signup2" element={<SignUp2 />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/mypage/:id" element={<UserMyPage />} />
+              <Route path="/mypage/:id/edit" element={<UserMyPageEdit />} />
+            </Routes>
+          </main>
+          <Footer />
+        </BrowserRouter>
+      </body>
+    </>
   );
 }
 
