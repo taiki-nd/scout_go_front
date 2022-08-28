@@ -1,16 +1,13 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import axios from "axios";
+import { useState, useEffect, useCallback, SyntheticEvent } from "react";
+import { useParams, Navigate } from "react-router-dom";
 import { Status } from "../../../../model/Status";
 import { Prefecture } from "../../../../model/Prefecture";
-import axios from "axios";
-import "./SignUp.css"
-import { SyntheticEvent } from "react";
-import { Navigate } from "react-router-dom";
-import { useCallback } from "react";
 import { useCookies } from 'react-cookie';
+import "../../user/signup/SignUp.css"
 
-export const SignUp2 = () => {
-  const [uuid, setUuid] = useState("");
+export const UserMyPageEdit = (() => {
+  const [uuid, setUuid] = useState("")
   const [lastName, setLastName] = useState("");
   const [lastNameKana, setLastNameKana] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -21,18 +18,90 @@ export const SignUp2 = () => {
   const [birthMonth, setBirthMonth] = useState(Number);
   const [birthDay, setBirthDay] = useState(Number);
   const [status, setStatus] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([] as Number[]);
   const [prefecture, setPrefecture] = useState([]);
+  const [selectedPrefecture, setSelectedPrefecture] = useState([] as Number[]);
+  const [schools, setSchools] = useState([]);
+  const [works, setWorks] = useState([]);
+  const [licenses, setLicense] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
-
   const [sexBoolean, setSexBoolean] = useState(true);
   const [statusRequired, setStatusRequired] = useState(true);
   const [prefectureRequired, setPrefectureRequired] = useState(true);
   const [checkedAllPrefecture, setCheckedAllPrefecture] = useState(false);
+  const [userMatch, setUserMatch] = useState(true);
 
   const [userState, setUserState] = useState(false);
-
   const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
+
+  const {id} = useParams();
+  const getId = () => {
+    return id;
+  }
+
+  /**
+   * getUserInfo
+   * ユーザー情報の取得
+   */
+  useEffect(() => {
+    // signIn状態の確認
+    if (cookies.scout_go_uuid) {
+      setUuid(cookies.scout_go_uuid);
+    } else {
+      removeCookie("scout_go_uuid");
+    }
+
+    const id = getId();
+    const getUserInfo = async () => {
+      const {data} = await axios.get(`/users/${id}`, {
+        params: {
+          uuid: cookies.scout_go_uuid
+        }
+      });
+      console.log('userInfo', data);
+      if (!data.status) {
+        console.log('failed to get userInfo');
+        setErrorMessage('ユーザー情報の取得に失敗しました。再度ページを読み込んでください。')
+        return;
+      }
+      const user = data.data;
+      setUuid(user.uuid);
+      // サインインユーザーとマイページユーザーの一致確認
+      if (user.uuid === cookies.scout_go_uuid){
+        console.log('user matched');
+        setUserMatch(true);
+      } else {
+        console.log('user not matched');
+        setUserMatch(false);
+      }
+      setLastName(user.last_name);
+      setLastNameKana(user.last_name_kana);
+      setFirstName(user.first_name);
+      setFirstNameKana(user.first_name_kana);
+      setNickname(user.nickname);
+      setSex(user.sex);
+      setBirthYear(user.birth_Year);
+      setBirthMonth(user.birth_month);
+      setBirthDay(user.birth_day);
+      // status情報の取得
+      setStatus(user.statuses);
+      console.log('user.statuses', user.statuses);
+      console.log('user.statuses', user.statuses[0].id);
+      setSelectedStatus(user.status.map((s: Status) => s.id));
+      // 就業可能エリアの取得
+      setPrefecture(user.prefectures);
+      console.log('user.prefectures', user.prefectures)
+      setSelectedPrefecture(user.prefectures.map((p: Prefecture) => p.id));
+      // 学歴の取得
+      setSchools(user.schools);
+      // 職歴情報の取得
+      setWorks(user.works);
+      // 資格情報の取得
+      setLicense(user.licenses);
+    }
+    getUserInfo();
+  }, []);
 
   /**
    * checkUserState
@@ -51,7 +120,7 @@ export const SignUp2 = () => {
       try {
         const { data } = await axios.get('/get_user_from_uuid', {
           params: {
-            uuid: uuid
+            uuid: cookies.scout_go_uuid
           }
         })
         if (data.status) {
@@ -246,15 +315,15 @@ export const SignUp2 = () => {
     }
   }, [lastName, lastNameKana, firstName, firstNameKana, nickname, birthYear, birthMonth, birthDay, sex]);
 
-  if (userState) {
-    return <Navigate to='/' />
-  }
+  // if (!userState) {
+  //   return <Navigate to='/' />
+  // }
 
-  return (
+  return(
     <>
       <div className="signup-form">
         <form className="container" onSubmit={submit}>
-          <h2 className="h3 mb-3 fw-normal">Create Account</h2>
+          <h2 className="h3 mb-3 fw-normal">Edit Account</h2>
           {
             errorMessage === ''
               ? <div></div>
@@ -263,9 +332,11 @@ export const SignUp2 = () => {
           <div className="form-group">
           <label>氏名</label>
             <input type="text" className="form-control input-lg" placeholder="山田" required
+              defaultValue={lastName}
               onChange={e => setLastName(e.target.value)}
             />
             <input type="text" className="form-control input-lg" placeholder="太郎" required
+              defaultValue={firstName}
               onChange={e => setFirstName(e.target.value)}
             />
           </div>
@@ -274,10 +345,12 @@ export const SignUp2 = () => {
             <label>氏名カナ</label>
             <input type="text" className="form-control input-lg" placeholder="ヤマダ" required
               pattern="^[\u30A0-\u30FF]+$" title="全角カタカナ"
+              defaultValue={lastNameKana}
               onChange={e => setLastNameKana(e.target.value)}
             />
             <input type="text" className="form-control input-lg" placeholder="タロウ" required
               pattern="^[\u30A0-\u30FF]+$" title="全角カタカナ"
+              defaultValue={firstNameKana}
               onChange={e => setFirstNameKana(e.target.value)}
             />
           </div>
@@ -286,6 +359,7 @@ export const SignUp2 = () => {
             <label>ニックネーム</label>
             <input type="text" className="form-control input-lg" placeholder="nickname" required
               pattern="^[0-9a-zA-Z]*$" title="半角英大文字・半角英小文字・半角数字"
+              defaultValue={nickname}
               onChange={e => setNickname(e.target.value)}
             />
           </div>
@@ -294,14 +368,17 @@ export const SignUp2 = () => {
             <label>誕生日</label>
             <input type="text" step="1" className="form-control input-lg" placeholder="2000" required
               pattern="[0-9]{4}" title="半角数字4桁"
+              defaultValue={birthYear}
               onChange={e => setBirthYear(parseInt(e.target.value))}
             />
             <input type="text" step="1" className="form-control input-lg" placeholder="3" required
               pattern="[0-9]{1,2}" title="半角数字1〜2桁"
+              defaultValue={birthMonth}
               onChange={e => setBirthMonth(parseInt(e.target.value))}
             />
             <input type="text" step="1" className="form-control input-lg" placeholder="19" required
               pattern="[0-9]{1,2}" title="半角数字1〜2桁"
+              defaultValue={birthDay}
               onChange={e => setBirthDay(parseInt(e.target.value))}
             />
           </div>
@@ -334,6 +411,7 @@ export const SignUp2 = () => {
                   <div className="form-check form-check-inline" key={s.id}>
                     <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check" required={statusRequired}
                       value={s.id}
+                      checked={selectedStatus.some(ss => ss === s.id)}
                       onChange={e => requiredStatus()}
                     />
                     <label className="form-check-label">{s.name}</label>
@@ -376,4 +454,4 @@ export const SignUp2 = () => {
       </div>
     </>
   );
-}
+})

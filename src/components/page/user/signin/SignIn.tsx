@@ -1,10 +1,11 @@
 import { AiFillGithub, AiFillGoogleCircle } from 'react-icons/ai'
 import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { auth } from "../../../../utils/firebase";
 import { useCallback } from 'react';
 import { SyntheticEvent } from 'react';
+import { useCookies } from 'react-cookie';
 
 export const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -12,17 +13,7 @@ export const SignIn = () => {
   const [authMessage, setAuthMessage] = useState("");
   const [signInStatus, setSignInStatus] = useState(false);
 
-  // signIn状態の確認
-  useEffect(() => {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        console.log('user signed in');
-        setSignInStatus(true);
-      } else {
-        console.log('user not signed in');
-      }
-    })
-  }, [])
+  const [cookies, setCookie, removeCookie] = useCookies(['scout_go_uuid']);
 
   /**
    * signIpWithEmail
@@ -34,6 +25,7 @@ export const SignIn = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((user) => {
         console.log('ログイン成功:', user.user.uid)
+        console.log('user', user)
       })
       .catch((error) => {
         console.error(error)
@@ -53,7 +45,8 @@ export const SignIn = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        console.log(user)
+        console.log('user', user)
+        setCookie("scout_go_uuid", user.uid);
       }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -75,7 +68,8 @@ export const SignIn = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        console.log(user)
+        console.log('user', user)
+        setCookie("scout_go_uuid", user.uid);
       }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -84,7 +78,7 @@ export const SignIn = () => {
       });
   }, [])
 
-  if (signInStatus === true) {
+  if (Object.keys(cookies).length !== 0) {
     return (
       <Navigate to='/' />
     );
@@ -94,8 +88,10 @@ export const SignIn = () => {
     <>
       <div className="signup-form">
         <form className="container" onSubmit={signInWithEmail}>
-          <h2>Sign In</h2>
-          <p className="hint-text">Sign up with your social media account or email address</p>
+          <h2>SignIn</h2>
+          <div className="text-center">アカウントがない場合はこちら</div>
+          <h3 className="text-center"><Link to="/signup">SignUp</Link></h3>
+          <p className="hint-text">Sign in with your social media account or email address</p>
           {
             authMessage === ''
               ? <div></div>
