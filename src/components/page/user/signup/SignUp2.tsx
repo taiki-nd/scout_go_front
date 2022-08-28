@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { Status } from "../../../../model/Status";
-import { Prefecture } from "../../../../model/Prefecture"
+import { Prefecture } from "../../../../model/Prefecture";
 import axios from "axios";
 import "./SignUp.css"
 import { SyntheticEvent } from "react";
