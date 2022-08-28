@@ -18,7 +18,9 @@ export const UserMyPageEdit = (() => {
   const [birthMonth, setBirthMonth] = useState(Number);
   const [birthDay, setBirthDay] = useState(Number);
   const [status, setStatus] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([] as Number[]);
   const [prefecture, setPrefecture] = useState([]);
+  const [selectedPrefecture, setSelectedPrefecture] = useState([] as Number[]);
   const [schools, setSchools] = useState([]);
   const [works, setWorks] = useState([]);
   const [licenses, setLicense] = useState([]);
@@ -59,7 +61,7 @@ export const UserMyPageEdit = (() => {
       });
       console.log('userInfo', data);
       if (!data.status) {
-        console.log('failed to get userInfo')
+        console.log('failed to get userInfo');
         setErrorMessage('ユーザー情報の取得に失敗しました。再度ページを読み込んでください。')
         return;
       }
@@ -84,8 +86,13 @@ export const UserMyPageEdit = (() => {
       setBirthDay(user.birth_day);
       // status情報の取得
       setStatus(user.statuses);
+      console.log('user.statuses', user.statuses);
+      console.log('user.statuses', user.statuses[0].id);
+      setSelectedStatus(user.status.map((s: Status) => s.id));
       // 就業可能エリアの取得
       setPrefecture(user.prefectures);
+      console.log('user.prefectures', user.prefectures)
+      setSelectedPrefecture(user.prefectures.map((p: Prefecture) => p.id));
       // 学歴の取得
       setSchools(user.schools);
       // 職歴情報の取得
@@ -113,7 +120,7 @@ export const UserMyPageEdit = (() => {
       try {
         const { data } = await axios.get('/get_user_from_uuid', {
           params: {
-            uuid: uuid
+            uuid: cookies.scout_go_uuid
           }
         })
         if (data.status) {
@@ -308,9 +315,9 @@ export const UserMyPageEdit = (() => {
     }
   }, [lastName, lastNameKana, firstName, firstNameKana, nickname, birthYear, birthMonth, birthDay, sex]);
 
-  if (userState) {
-    return <Navigate to='/' />
-  }
+  // if (!userState) {
+  //   return <Navigate to='/' />
+  // }
 
   return(
     <>
@@ -325,9 +332,11 @@ export const UserMyPageEdit = (() => {
           <div className="form-group">
           <label>氏名</label>
             <input type="text" className="form-control input-lg" placeholder="山田" required
+              defaultValue={lastName}
               onChange={e => setLastName(e.target.value)}
             />
             <input type="text" className="form-control input-lg" placeholder="太郎" required
+              defaultValue={firstName}
               onChange={e => setFirstName(e.target.value)}
             />
           </div>
@@ -336,10 +345,12 @@ export const UserMyPageEdit = (() => {
             <label>氏名カナ</label>
             <input type="text" className="form-control input-lg" placeholder="ヤマダ" required
               pattern="^[\u30A0-\u30FF]+$" title="全角カタカナ"
+              defaultValue={lastNameKana}
               onChange={e => setLastNameKana(e.target.value)}
             />
             <input type="text" className="form-control input-lg" placeholder="タロウ" required
               pattern="^[\u30A0-\u30FF]+$" title="全角カタカナ"
+              defaultValue={firstNameKana}
               onChange={e => setFirstNameKana(e.target.value)}
             />
           </div>
@@ -348,6 +359,7 @@ export const UserMyPageEdit = (() => {
             <label>ニックネーム</label>
             <input type="text" className="form-control input-lg" placeholder="nickname" required
               pattern="^[0-9a-zA-Z]*$" title="半角英大文字・半角英小文字・半角数字"
+              defaultValue={nickname}
               onChange={e => setNickname(e.target.value)}
             />
           </div>
@@ -356,14 +368,17 @@ export const UserMyPageEdit = (() => {
             <label>誕生日</label>
             <input type="text" step="1" className="form-control input-lg" placeholder="2000" required
               pattern="[0-9]{4}" title="半角数字4桁"
+              defaultValue={birthYear}
               onChange={e => setBirthYear(parseInt(e.target.value))}
             />
             <input type="text" step="1" className="form-control input-lg" placeholder="3" required
               pattern="[0-9]{1,2}" title="半角数字1〜2桁"
+              defaultValue={birthMonth}
               onChange={e => setBirthMonth(parseInt(e.target.value))}
             />
             <input type="text" step="1" className="form-control input-lg" placeholder="19" required
               pattern="[0-9]{1,2}" title="半角数字1〜2桁"
+              defaultValue={birthDay}
               onChange={e => setBirthDay(parseInt(e.target.value))}
             />
           </div>
@@ -396,6 +411,7 @@ export const UserMyPageEdit = (() => {
                   <div className="form-check form-check-inline" key={s.id}>
                     <input className="form-check-input" type="checkbox" placeholder="ステータス" name="status-check" required={statusRequired}
                       value={s.id}
+                      checked={selectedStatus.some(ss => ss === s.id)}
                       onChange={e => requiredStatus()}
                     />
                     <label className="form-check-label">{s.name}</label>
